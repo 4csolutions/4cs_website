@@ -277,17 +277,17 @@ export default function IndustryDetail() {
             
             <div className="flex wrap justify-center align-center gap-6">
               {logos.map((logo) => (
-                <a 
-                  href={logo.websiteUrl || '#'} 
-                  key={logo._id} 
+                <a
+                  href={logo.websiteUrl || '#'}
+                  key={logo._id}
                   target={logo.websiteUrl && logo.websiteUrl !== '#' ? '_blank' : '_self'}
                   rel="noopener noreferrer"
-                  className="glass flex align-center justify-center" 
-                  style={{ 
-                    padding: '16px 32px', 
-                    borderRadius: '12px', 
-                    minWidth: '160px', 
-                    textDecoration: 'none', 
+                  className="glass flex align-center justify-center"
+                  style={{
+                    padding: '16px 28px',
+                    borderRadius: '12px',
+                    minWidth: logo.logoData ? '120px' : '160px',
+                    textDecoration: 'none',
                     border: '1px solid var(--border)',
                     boxShadow: 'var(--shadow-sm)',
                     transition: 'transform var(--transition-fast), border-color var(--transition-fast)'
@@ -301,9 +301,18 @@ export default function IndustryDetail() {
                     e.currentTarget.style.borderColor = 'var(--border)';
                   }}
                 >
-                  <span style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '16px', letterSpacing: '0.05em' }}>
-                    {logo.clientName}
-                  </span>
+                  {logo.logoData ? (
+                    <img
+                      src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
+                      alt={logo.clientName}
+                      title={logo.clientName}
+                      style={{ maxHeight: '48px', maxWidth: '140px', objectFit: 'contain' }}
+                    />
+                  ) : (
+                    <span style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '16px', letterSpacing: '0.05em' }}>
+                      {logo.clientName}
+                    </span>
+                  )}
                 </a>
               ))}
             </div>

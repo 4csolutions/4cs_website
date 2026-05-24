@@ -161,25 +161,24 @@ const seedData = async () => {
 
     // 4. Seed Client Logos (Real Customer Roster)
     console.log('Seeding client logos...');
+    // Minimal 1x1 transparent PNG in base64 — admins can replace via dashboard upload
+    const PLACEHOLDER_PNG = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
     const logos = [
       // Healthcare
-      { clientName: 'NK Hospital', logoPath: '/uploads/nk_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'Manur Multi-Speciality Hospital', logoPath: '/uploads/manur_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'Bahmani Critical Care', logoPath: '/uploads/bahmani_care.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'Asian Hospital', logoPath: '/uploads/asian_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'Jeevika Multi-Speciality Hospital', logoPath: '/uploads/jeevika_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
-      
+      { clientName: 'NK Hospital', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Manur Multi-Speciality Hospital', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Bahmani Critical Care', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Asian Hospital', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Jeevika Multi-Speciality Hospital', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: healthcareSector?._id },
       // Legal
-      { clientName: 'Suprema Law Associates', logoPath: '/uploads/suprema_law.png', websiteUrl: 'https://casecentral.in', sector: legalSector?._id },
-      
+      { clientName: 'Suprema Law Associates', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: 'https://casecentral.in', sector: legalSector?._id },
       // Logistics
-      { clientName: 'EFF Logistics Pvt Ltd', logoPath: '/uploads/eff_logistics.png', websiteUrl: '#', sector: logisticsSector?._id },
-      
+      { clientName: 'EFF Logistics Pvt Ltd', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: logisticsSector?._id },
       // Project Contracting
-      { clientName: 'SAMA Energy', logoPath: '/uploads/sama_energy.png', websiteUrl: '#', sector: contractingSector?._id },
-      { clientName: 'Petrovision International LLC', logoPath: '/uploads/petrovision.png', websiteUrl: '#', sector: contractingSector?._id },
-      { clientName: 'Nexalis International Oil & Gas', logoPath: '/uploads/nexalis.png', websiteUrl: '#', sector: contractingSector?._id },
-      { clientName: 'Brixpan Infra Pvt. Ltd.', logoPath: '/uploads/brixpan.png', websiteUrl: '#', sector: contractingSector?._id }
+      { clientName: 'SAMA Energy', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Petrovision International LLC', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Nexalis International Oil & Gas', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Brixpan Infra Pvt. Ltd.', logoData: PLACEHOLDER_PNG, logoMimeType: 'image/png', websiteUrl: '#', sector: contractingSector?._id }
     ];
     await ClientLogo.insertMany(logos);
     console.log('Client logos seeded successfully.');

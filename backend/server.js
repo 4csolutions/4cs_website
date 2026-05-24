@@ -3,7 +3,6 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
-import multer from 'multer';
 import fs from 'fs';
 
 // Database connection
@@ -27,47 +26,14 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Create uploads directory if not exists
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
 // 1. Establish Database Connection
 connectDB();
 
 // 2. Middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static upload folder
-app.use('/uploads', express.static(uploadsDir));
-
-// Multer Upload configuration for dashboard logos/avatars
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  }
-});
-const upload = multer({ storage });
-
-// Upload Endpoint (Secured or Public for panel creation)
-app.post('/api/upload', upload.single('image'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Please select an image file to upload' });
-    }
-    const relativePath = `/uploads/${req.file.filename}`;
-    res.json({ message: 'File uploaded successfully', url: relativePath });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Increase JSON body limit to 10MB to accommodate base64 logo uploads
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 3. API Routes mapping
 app.use('/api/auth', authRouter);

@@ -124,11 +124,11 @@ router.put('/admin/inbox/:id', authenticateAdmin, async (req, res) => {
 // DELETE inquiry (Admin Secure)
 router.delete('/admin/inbox/:id', authenticateAdmin, async (req, res) => {
   try {
-    const message = await ContactMessage.findByIdAndDelete(req.params.id);
-    if (!message) {
+    const deleted = await ContactMessage.findByIdAndDelete(req.params.id);
+    if (!deleted) {
       return res.status(404).json({ error: 'Enquiry message not found' });
     }
-    res.json({ message: 'Enquiry deleted successfully', message });
+    res.json({ message: 'Enquiry deleted successfully', deleted });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

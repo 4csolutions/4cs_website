@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
-import { LayoutGrid, Quote, Tag, Image, Mail, ArrowRight, Plus, Trash2, Edit3, CheckCircle2, AlertCircle, X } from 'lucide-react';
+import { LayoutGrid, Quote, Image, Mail, Plus, Trash2, Edit3, CheckCircle2, AlertCircle, X, BookOpen, Upload, Eye } from 'lucide-react';
 
 export default function AdminDashboard({ token }) {
   const [activeTab, setActiveTab] = useState('inbox');
@@ -17,40 +17,38 @@ export default function AdminDashboard({ token }) {
 
   // Modal control states
   const [showModal, setShowModal] = useState(false);
-  const [modalType, setModalType] = useState(''); // 'sector', 'testimonial', 'logo', 'blog'
-  const [editItem, setEditItem] = useState(null); // Item to edit, null for create
+  const [modalType, setModalType] = useState('');
+  const [editItem, setEditItem] = useState(null);
 
   // Form states
   const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', features: '' });
   const [testimonialForm, setTestimonialForm] = useState({ clientName: '', clientPosition: '', companyName: '', feedback: '', sectorId: '' });
-  const [logoForm, setLogoForm] = useState({ clientName: '', logoPath: '', websiteUrl: '' });
+  const [logoForm, setLogoForm] = useState({ clientName: '', logoData: '', logoMimeType: 'image/png', websiteUrl: '', previewUrl: '' });
   const [blogForm, setBlogForm] = useState({ title: '', summary: '', content: '', author: 'S. M. Hashmi', sectorId: '', metaKeywords: '' });
+
+  const fileInputRef = useRef(null);
 
   // Get token safely
   const localToken = token || localStorage.getItem('adminToken');
 
-  // Verify access
   if (!localToken) {
     return <Navigate to="/login" replace />;
   }
 
-  // Helper fetch Headers
   const getHeaders = () => ({
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${localToken}`
   });
 
-  // Fetch all dashboard datasets
   const fetchAllData = () => {
     setLoading(true);
     setErrorMsg('');
-    
     Promise.all([
-      fetch('/api/contact/admin/inbox', { headers: getHeaders() }).then(res => res.json()),
-      fetch('/api/sectors').then(res => res.json()),
-      fetch('/api/testimonials').then(res => res.json()),
-      fetch('/api/logos').then(res => res.json()),
-      fetch('/api/blogs').then(res => res.json())
+      fetch('/api/contact/admin/inbox', { headers: getHeaders() }).then(r => r.json()),
+      fetch('/api/sectors').then(r => r.json()),
+      fetch('/api/testimonials').then(r => r.json()),
+      fetch('/api/logos').then(r => r.json()),
+      fetch('/api/blogs').then(r => r.json())
     ])
       .then(([inboxData, sectorsData, testimonialsData, logosData, blogsData]) => {
         setInbox(Array.isArray(inboxData) ? inboxData : []);
@@ -60,72 +58,68 @@ export default function AdminDashboard({ token }) {
         setBlogs(Array.isArray(blogsData) ? blogsData : []);
         setLoading(false);
       })
-      .catch(err => {
-        console.error('Error fetching dashboard datasets:', err);
-        setErrorMsg('Failed to load data. Token might be expired.');
+      .catch(() => {
+        setErrorMsg('Failed to load data. Token may be expired.');
         setLoading(false);
       });
   };
 
-  useEffect(() => {
-    fetchAllData();
-  }, [localToken]);
+  useEffect(() => { fetchAllData(); }, [localToken]);
 
-  // Flash temporary success toast
   const triggerSuccess = (msg) => {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(''), 4000);
   };
 
-  // 1. DELETE ACTION DISPATCHER
-  const handleDelete = (type, id) => {
-    if (!window.confirm(`Are you absolutely sure you want to delete this ${type}?`)) return;
-
-    let endpoint = '';
-    if (type === 'sector') endpoint = `/api/sectors/${id}`;
-    else if (type === 'testimonial') endpoint = `/api/testimonials/${id}`;
-    else if (type === 'logo') endpoint = `/api/logos/${id}`;
-    else if (type === 'blog') endpoint = `/api/blogs/${id}`;
-    else if (type === 'enquiry') endpoint = `/api/contact/admin/inbox/${id}`;
-
-    fetch(endpoint, {
-      method: 'DELETE',
-      headers: getHeaders()
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          setErrorMsg(data.error);
-        } else {
-          triggerSuccess(`${type.toUpperCase()} deleted successfully!`);
-          fetchAllData();
-        }
-      })
-      .catch(err => console.error(err));
+  // Handle logo file pick → convert to base64
+  const handleLogoFilePick = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const dataUrl = evt.target.result;
+      const mime = file.type || 'image/png';
+      const base64 = dataUrl.split(',')[1]; // strip data:mime/type;base64, prefix
+      setLogoForm(prev => ({ ...prev, logoData: base64, logoMimeType: mime, previewUrl: dataUrl }));
+    };
+    reader.readAsDataURL(file);
   };
 
-  // 2. TOGGLE ENQUIRY INBOX STATUS
-  const toggleEnquiryStatus = (id, currentStatus) => {
-    const nextStatus = currentStatus === 'New' ? 'Read' : currentStatus === 'Read' ? 'Replied' : 'New';
-    
+  // DELETE dispatcher
+  const handleDelete = (type, id) => {
+    if (!window.confirm(`Delete this ${type}?`)) return;
+    const endpoints = {
+      sector: `/api/sectors/${id}`,
+      testimonial: `/api/testimonials/${id}`,
+      logo: `/api/logos/${id}`,
+      blog: `/api/blogs/${id}`,
+      enquiry: `/api/contact/admin/inbox/${id}`
+    };
+    fetch(endpoints[type], { method: 'DELETE', headers: getHeaders() })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) setErrorMsg(data.error);
+        else { triggerSuccess(`${type} deleted.`); fetchAllData(); }
+      })
+      .catch(console.error);
+  };
+
+  // Toggle enquiry status
+  const toggleEnquiryStatus = (id, current) => {
+    const next = current === 'New' ? 'Read' : current === 'Read' ? 'Replied' : 'New';
     fetch(`/api/contact/admin/inbox/${id}`, {
       method: 'PUT',
       headers: getHeaders(),
-      body: JSON.stringify({ status: nextStatus })
+      body: JSON.stringify({ status: next })
     })
-      .then(res => res.json())
+      .then(r => r.json())
       .then(data => {
-        if (data.error) {
-          setErrorMsg(data.error);
-        } else {
-          triggerSuccess('Inbox status updated successfully!');
-          fetchAllData();
-        }
-      })
-      .catch(err => console.error(err));
+        if (data.error) setErrorMsg(data.error);
+        else { triggerSuccess('Status updated.'); fetchAllData(); }
+      });
   };
 
-  // 3. LAUNCH CREATE/EDIT DIALOG
+  // Open modal
   const launchModal = (type, item = null) => {
     setModalType(type);
     setEditItem(item);
@@ -133,522 +127,539 @@ export default function AdminDashboard({ token }) {
 
     if (type === 'sector') {
       setSectorForm({
-        name: item ? item.name : '',
-        description: item ? item.description : '',
-        icon: item ? item.icon : 'activity',
-        features: item ? item.features.join(', ') : ''
+        name: item?.name ?? '',
+        description: item?.description ?? '',
+        icon: item?.icon ?? 'activity',
+        features: item ? item.features.join('\n') : ''
       });
     } else if (type === 'testimonial') {
       setTestimonialForm({
-        clientName: item ? item.clientName : '',
-        clientPosition: item ? item.clientPosition : '',
-        companyName: item ? item.companyName : '',
-        feedback: item ? item.feedback : '',
-        sectorId: item && item.sector ? item.sector._id : ''
+        clientName: item?.clientName ?? '',
+        clientPosition: item?.clientPosition ?? '',
+        companyName: item?.companyName ?? '',
+        feedback: item?.feedback ?? '',
+        sectorId: item?.sector?._id ?? ''
       });
     } else if (type === 'logo') {
+      const preview = item ? `data:${item.logoMimeType};base64,${item.logoData}` : '';
       setLogoForm({
-        clientName: item ? item.clientName : '',
-        logoPath: item ? item.logoPath : '',
-        websiteUrl: item ? item.websiteUrl : ''
+        clientName: item?.clientName ?? '',
+        logoData: item?.logoData ?? '',
+        logoMimeType: item?.logoMimeType ?? 'image/png',
+        websiteUrl: item?.websiteUrl ?? '',
+        previewUrl: preview
       });
     } else if (type === 'blog') {
       setBlogForm({
-        title: item ? item.title : '',
-        summary: item ? item.summary : '',
-        content: item ? item.content : '',
-        author: item ? item.author : 'S. M. Hashmi',
-        sectorId: item && item.sector ? item.sector._id : '',
-        metaKeywords: item && item.metaKeywords ? item.metaKeywords.join(', ') : ''
+        title: item?.title ?? '',
+        summary: item?.summary ?? '',
+        content: item?.content ?? '',
+        author: item?.author ?? 'S. M. Hashmi',
+        sectorId: item?.sector?._id ?? '',
+        metaKeywords: item?.metaKeywords ? item.metaKeywords.join(', ') : ''
       });
     }
   };
 
-  // 4. SUBMIT FORM CONTROLLER
+  // Submit form
   const handleFormSubmit = (e) => {
     e.preventDefault();
     let body = {};
     let endpoint = '';
-    let method = editItem ? 'PUT' : 'POST';
+    const method = editItem ? 'PUT' : 'POST';
 
     if (modalType === 'sector') {
       endpoint = editItem ? `/api/sectors/${editItem._id}` : '/api/sectors';
-      const featuresArray = sectorForm.features.split(',').map(f => f.trim()).filter(Boolean);
+      const featuresArray = sectorForm.features.split('\n').map(f => f.trim()).filter(Boolean);
       body = { ...sectorForm, features: featuresArray };
     } else if (modalType === 'testimonial') {
       endpoint = editItem ? `/api/testimonials/${editItem._id}` : '/api/testimonials';
       body = testimonialForm;
     } else if (modalType === 'logo') {
       endpoint = editItem ? `/api/logos/${editItem._id}` : '/api/logos';
-      body = logoForm;
+      if (!logoForm.logoData && !editItem) {
+        setErrorMsg('Please select a logo image to upload.');
+        return;
+      }
+      body = { clientName: logoForm.clientName, logoData: logoForm.logoData, logoMimeType: logoForm.logoMimeType, websiteUrl: logoForm.websiteUrl };
     } else if (modalType === 'blog') {
       endpoint = editItem ? `/api/blogs/${editItem._id}` : '/api/blogs';
       body = blogForm;
     }
 
-    fetch(endpoint, {
-      method,
-      headers: getHeaders(),
-      body: JSON.stringify(body)
-    })
-      .then(res => res.json())
+    fetch(endpoint, { method, headers: getHeaders(), body: JSON.stringify(body) })
+      .then(r => r.json())
       .then(data => {
-        if (data.error) {
-          setErrorMsg(data.error);
-        } else {
-          triggerSuccess(`${modalType.toUpperCase()} saved successfully!`);
+        if (data.error) setErrorMsg(data.error);
+        else {
+          triggerSuccess(`${modalType} saved successfully!`);
           setShowModal(false);
           setEditItem(null);
           fetchAllData();
         }
       })
-      .catch(err => {
-        console.error(err);
-        setErrorMsg('Error saving form data.');
-      });
+      .catch(() => setErrorMsg('Error saving data.'));
   };
 
+  // ─── Sidebar nav items ───────────────────────────────────────────────────────
+  const navItems = [
+    { key: 'inbox', icon: <Mail size={18} />, label: `Inbox (${inbox.filter(m => m.status === 'New').length})` },
+    { key: 'sectors', icon: <LayoutGrid size={18} />, label: 'Solutions' },
+    { key: 'testimonials', icon: <Quote size={18} />, label: 'Testimonials' },
+    { key: 'logos', icon: <Image size={18} />, label: 'Client Logos' },
+    { key: 'blogs', icon: <BookOpen size={18} />, label: 'Case Studies' }
+  ];
+
   return (
-    <div className="dashboard-container" style={{ padding: '120px 0 80px 0', minHeight: '85vh' }}>
-      <div className="container flex gap-6 wrap" style={{ alignItems: 'flex-start' }}>
-        
-        {/* SIDEBAR TABS */}
-        <aside className="glass" style={{ width: '260px', padding: '24px', borderRadius: 'var(--radius-md)', display: 'flex', flexDirection: 'column', gap: '8px', flexShrink: 0 }}>
-          <h3 style={{ fontSize: '15px', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '16px', letterSpacing: '0.05em', textAlign: 'left' }}>Dashboard Console</h3>
-          
-          <button onClick={() => setActiveTab('inbox')} style={tabBtnStyle(activeTab === 'inbox')}>
-            <Mail size={18} /> Inbox ({inbox.filter(m => m.status === 'New').length})
+    <div style={{ display: 'flex', minHeight: '100vh', paddingTop: '72px' }}>
+
+      {/* ── FIXED LEFT SIDEBAR ──────────────────────────────────────────────── */}
+      <aside style={{
+        position: 'fixed',
+        top: '72px',
+        left: 0,
+        bottom: 0,
+        width: '240px',
+        backgroundColor: 'var(--bg-card)',
+        borderRight: '1px solid var(--border)',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '28px 16px',
+        zIndex: 100,
+        overflowY: 'auto'
+      }}>
+        <p style={{ fontSize: '11px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, marginBottom: '20px', paddingLeft: '10px' }}>
+          Dashboard Console
+        </p>
+
+        {navItems.map(({ key, icon, label }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              width: '100%',
+              padding: '11px 14px',
+              borderRadius: '8px',
+              border: 'none',
+              textAlign: 'left',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer',
+              marginBottom: '4px',
+              backgroundColor: activeTab === key ? 'var(--primary)' : 'transparent',
+              color: activeTab === key ? 'white' : 'var(--text-muted)',
+              transition: 'all 0.15s ease'
+            }}
+          >
+            {icon} {label}
           </button>
-          
-          <button onClick={() => setActiveTab('sectors')} style={tabBtnStyle(activeTab === 'sectors')}>
-            <LayoutGrid size={18} /> Solutions
-          </button>
+        ))}
+      </aside>
 
-          <button onClick={() => setActiveTab('testimonials')} style={tabBtnStyle(activeTab === 'testimonials')}>
-            <Quote size={18} /> Testimonials
-          </button>
+      {/* ── MAIN CONTENT AREA ─────────────────────────────────────────────────── */}
+      <main style={{ marginLeft: '240px', flex: 1, padding: '40px 48px', minWidth: 0 }}>
 
-          <button onClick={() => setActiveTab('logos')} style={tabBtnStyle(activeTab === 'logos')}>
-            <Image size={18} /> Client Logos
-          </button>
+        {/* Toast alerts */}
+        {successMsg && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: 'var(--primary-glow)', border: '1px solid var(--primary)', borderRadius: '8px', padding: '14px 20px', marginBottom: '24px', color: 'var(--primary)' }}>
+            <CheckCircle2 size={20} /> <span style={{ fontSize: '14px', fontWeight: 500 }}>{successMsg}</span>
+          </div>
+        )}
+        {errorMsg && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', backgroundColor: 'rgba(231,29,54,0.1)', border: '1px solid var(--error)', borderRadius: '8px', padding: '14px 20px', marginBottom: '24px', color: 'var(--error)' }}>
+            <AlertCircle size={20} /> <span style={{ fontSize: '14px', fontWeight: 500 }}>{errorMsg}</span>
+            <button onClick={() => setErrorMsg('')} style={{ marginLeft: 'auto', background: 'none', border: 'none', cursor: 'pointer', color: 'inherit' }}><X size={16} /></button>
+          </div>
+        )}
 
-          <button onClick={() => setActiveTab('blogs')} style={tabBtnStyle(activeTab === 'blogs')}>
-            <Tag size={18} /> Case Studies
-          </button>
-        </aside>
+        {loading ? (
+          <div style={{ textAlign: 'center', padding: '80px 0' }}>
+            <span className="spinner" />
+            <p style={{ color: 'var(--text-muted)', marginTop: '12px' }}>Loading console data…</p>
+          </div>
+        ) : (
+          <div className="card-item" style={{ padding: '36px', textAlign: 'left' }}>
 
-        {/* WORKSPACE CONTENT BOARD */}
-        <div style={{ flexGrow: 1, minWidth: '320px' }}>
-          
-          {/* TOAST SYSTEM ALERTS */}
-          {successMsg && (
-            <div className="flex align-center gap-2 anim-fade-in" style={{ backgroundColor: 'var(--primary-glow)', border: '1px solid var(--primary)', borderRadius: 'var(--radius-sm)', padding: '14px 20px', marginBottom: '24px', color: 'var(--primary)' }}>
-              <CheckCircle2 size={22} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>{successMsg}</span>
-            </div>
-          )}
-
-          {errorMsg && (
-            <div className="flex align-center gap-2 anim-fade-in" style={{ backgroundColor: 'rgba(231,29,54,0.1)', border: '1px solid var(--error)', borderRadius: 'var(--radius-sm)', padding: '14px 20px', marginBottom: '24px', color: 'var(--error)' }}>
-              <AlertCircle size={22} style={{ flexShrink: 0 }} />
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>{errorMsg}</span>
-            </div>
-          )}
-
-          {loading ? (
-            <div className="text-center card-item" style={{ padding: '64px 0' }}>
-              <span className="spinner"></span>
-              <p style={{ color: 'var(--text-muted)', marginTop: '12px' }}>Loading Console dataset...</p>
-            </div>
-          ) : (
-            <div className="card-item" style={{ padding: '36px', textAlign: 'left' }}>
-              
-              {/* TABS: 1. INBOX ENQUIRIES */}
-              {activeTab === 'inbox' && (
-                <div>
-                  <h2 style={{ fontSize: '24px', color: 'var(--text-main)', marginBottom: '24px' }}>Web Forms Enquiry Inbox</h2>
-                  {inbox.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)' }}>No messages received yet.</p>
-                  ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table className="dash-table" style={tableStyle}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                            <th style={thStyle}>Date</th>
-                            <th style={thStyle}>Client Details</th>
-                            <th style={thStyle}>Subject</th>
-                            <th style={thStyle}>Message</th>
-                            <th style={thStyle}>Status</th>
-                            <th style={thStyle}>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {inbox.map((msg) => (
-                            <tr key={msg._id} style={{ borderBottom: '1px solid var(--border)', opacity: msg.status === 'Replied' ? 0.6 : 1 }}>
-                              <td style={tdStyle}>{new Date(msg.createdAt).toLocaleDateString()}</td>
-                              <td style={tdStyle}>
-                                <div style={{ fontWeight: 600 }}>{msg.name}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.email}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.phone || 'No Phone'}</div>
-                              </td>
-                              <td style={tdStyle}>{msg.subject}</td>
-                              <td style={{ ...tdStyle, maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'normal' }}>{msg.message}</td>
-                              <td style={tdStyle}>
-                                <button
-                                  onClick={() => toggleEnquiryStatus(msg._id, msg.status)}
-                                  className="btn"
-                                  style={{
-                                    padding: '4px 10px',
-                                    fontSize: '11px',
-                                    borderRadius: '12px',
-                                    backgroundColor: msg.status === 'New' ? 'var(--primary)' : msg.status === 'Read' ? 'var(--warning)' : 'var(--border)',
-                                    color: msg.status === 'New' ? 'white' : 'var(--text-main)',
-                                    cursor: 'pointer'
-                                  }}
-                                >
-                                  {msg.status}
-                                </button>
-                              </td>
-                              <td style={tdStyle}>
-                                <button onClick={() => handleDelete('enquiry', msg._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete Enquiry">
-                                  <Trash2 size={14} />
-                                </button>
-                              </td>
-                            </tr>
+            {/* ─── INBOX ─────────────────────────────────────────────────────── */}
+            {activeTab === 'inbox' && (
+              <div>
+                <h2 style={h2Style}>Web Form Enquiry Inbox</h2>
+                {inbox.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)' }}>No messages yet.</p>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={tableStyle}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                          {['Date', 'Client Details', 'Subject', 'Message', 'Status', 'Actions'].map(h => (
+                            <th key={h} style={thStyle}>{h}</th>
                           ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* TABS: 2. SECTORS */}
-              {activeTab === 'sectors' && (
-                <div>
-                  <div className="flex justify-between align-center" style={{ marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '24px', color: 'var(--text-main)' }}>Manage Sectors (Solutions)</h2>
-                    <button onClick={() => launchModal('sector')} className="btn btn-primary flex align-center gap-1" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                      <Plus size={16} /> Add Sector
-                    </button>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {inbox.map(msg => (
+                          <tr key={msg._id} style={{ borderBottom: '1px solid var(--border)', opacity: msg.status === 'Replied' ? 0.6 : 1 }}>
+                            <td style={tdStyle}>{new Date(msg.createdAt).toLocaleDateString()}</td>
+                            <td style={tdStyle}>
+                              <div style={{ fontWeight: 600 }}>{msg.name}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.email}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.phone || '—'}</div>
+                            </td>
+                            <td style={tdStyle}>{msg.subject}</td>
+                            <td style={{ ...tdStyle, maxWidth: '220px', wordBreak: 'break-word' }}>{msg.message}</td>
+                            <td style={tdStyle}>
+                              <button
+                                onClick={() => toggleEnquiryStatus(msg._id, msg.status)}
+                                style={{
+                                  padding: '4px 10px', fontSize: '11px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                                  backgroundColor: msg.status === 'New' ? 'var(--primary)' : msg.status === 'Read' ? 'var(--warning)' : 'var(--border)',
+                                  color: msg.status === 'New' ? 'white' : 'var(--text-main)'
+                                }}
+                              >{msg.status}</button>
+                            </td>
+                            <td style={tdStyle}>
+                              <button onClick={() => handleDelete('enquiry', msg._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  {sectors.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)' }}>No sectors added. Click 'Add Sector' to create one.</p>
-                  ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={tableStyle}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                            <th style={thStyle}>Solution Name</th>
-                            <th style={thStyle}>Description</th>
-                            <th style={thStyle}>Icon</th>
-                            <th style={thStyle}>Features Count</th>
-                            <th style={thStyle}>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sectors.map((sec) => (
-                            <tr key={sec._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={{ ...tdStyle, fontWeight: 600 }}>{sec.name}</td>
-                              <td style={{ ...tdStyle, maxWidth: '280px' }}>{sec.description.substring(0, 100)}...</td>
-                              <td style={tdStyle}><code>{sec.icon}</code></td>
-                              <td style={tdStyle}>{sec.features.length} features</td>
-                              <td style={tdStyle}>
-                                <div className="flex gap-2">
-                                  <button onClick={() => launchModal('sector', sec)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Edit">
-                                    <Edit3 size={14} />
-                                  </button>
-                                  <button onClick={() => handleDelete('sector', sec._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* TABS: 3. TESTIMONIALS */}
-              {activeTab === 'testimonials' && (
-                <div>
-                  <div className="flex justify-between align-center" style={{ marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '24px', color: 'var(--text-main)' }}>Manage Client Testimonials</h2>
-                    <button onClick={() => launchModal('testimonial')} className="btn btn-primary flex align-center gap-1" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                      <Plus size={16} /> Add Testimonial
-                    </button>
+            {/* ─── SECTORS ────────────────────────────────────────────────────── */}
+            {activeTab === 'sectors' && (
+              <div>
+                <div style={sectionHeaderStyle}>
+                  <h2 style={h2Style}>Manage Sectors (Solutions)</h2>
+                  <button onClick={() => launchModal('sector')} className="btn btn-primary" style={addBtnStyle}>
+                    <Plus size={16} /> Add Sector
+                  </button>
+                </div>
+                {sectors.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No sectors yet.</p> : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={tableStyle}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                          {['Solution Name', 'Description', 'Icon', 'Features Count', 'Actions'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sectors.map(sec => (
+                          <tr key={sec._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                            <td style={{ ...tdStyle, fontWeight: 600 }}>{sec.name}</td>
+                            <td style={{ ...tdStyle, maxWidth: '260px' }}>{sec.description.substring(0, 90)}…</td>
+                            <td style={tdStyle}><code>{sec.icon}</code></td>
+                            <td style={tdStyle}>{sec.features.length} features</td>
+                            <td style={tdStyle}>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button onClick={() => launchModal('sector', sec)} className="btn btn-secondary" style={{ padding: '6px 10px' }}><Edit3 size={14} /></button>
+                                <button onClick={() => handleDelete('sector', sec._id)} className="btn btn-danger" style={{ padding: '6px 10px' }}><Trash2 size={14} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  {testimonials.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)' }}>No testimonials added. Click 'Add Testimonial'.</p>
-                  ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={tableStyle}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                            <th style={thStyle}>Client</th>
-                            <th style={thStyle}>Feedback Quotes</th>
-                            <th style={thStyle}>Solution Link</th>
-                            <th style={thStyle}>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {testimonials.map((t) => (
-                            <tr key={t._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={tdStyle}>
-                                <div style={{ fontWeight: 600 }}>{t.clientName}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t.clientPosition}, {t.companyName}</div>
-                              </td>
-                              <td style={{ ...tdStyle, maxWidth: '280px' }}>"{t.feedback}"</td>
-                              <td style={tdStyle}>{t.sector ? t.sector.name : 'General'}</td>
-                              <td style={tdStyle}>
-                                <div className="flex gap-2">
-                                  <button onClick={() => launchModal('testimonial', t)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Edit">
-                                    <Edit3 size={14} />
-                                  </button>
-                                  <button onClick={() => handleDelete('testimonial', t._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* TABS: 4. CLIENT LOGOS */}
-              {activeTab === 'logos' && (
-                <div>
-                  <div className="flex justify-between align-center" style={{ marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '24px', color: 'var(--text-main)' }}>Manage Clients Scrolling Logos</h2>
-                    <button onClick={() => launchModal('logo')} className="btn btn-primary flex align-center gap-1" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                      <Plus size={16} /> Add Client Logo
-                    </button>
+            {/* ─── TESTIMONIALS ───────────────────────────────────────────────── */}
+            {activeTab === 'testimonials' && (
+              <div>
+                <div style={sectionHeaderStyle}>
+                  <h2 style={h2Style}>Manage Client Testimonials</h2>
+                  <button onClick={() => launchModal('testimonial')} className="btn btn-primary" style={addBtnStyle}>
+                    <Plus size={16} /> Add Testimonial
+                  </button>
+                </div>
+                {testimonials.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No testimonials yet.</p> : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={tableStyle}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                          {['Client', 'Feedback', 'Solution', 'Actions'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {testimonials.map(t => (
+                          <tr key={t._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                            <td style={tdStyle}>
+                              <div style={{ fontWeight: 600 }}>{t.clientName}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t.clientPosition}, {t.companyName}</div>
+                            </td>
+                            <td style={{ ...tdStyle, maxWidth: '280px' }}>"{t.feedback}"</td>
+                            <td style={tdStyle}>{t.sector?.name || 'General'}</td>
+                            <td style={tdStyle}>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button onClick={() => launchModal('testimonial', t)} className="btn btn-secondary" style={{ padding: '6px 10px' }}><Edit3 size={14} /></button>
+                                <button onClick={() => handleDelete('testimonial', t._id)} className="btn btn-danger" style={{ padding: '6px 10px' }}><Trash2 size={14} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                  {logos.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)' }}>No client logos added.</p>
-                  ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={tableStyle}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                            <th style={thStyle}>Client Name</th>
-                            <th style={thStyle}>Logo Path</th>
-                            <th style={thStyle}>Website URL</th>
-                            <th style={thStyle}>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {logos.map((logo) => (
-                            <tr key={logo._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={{ ...tdStyle, fontWeight: 600 }}>{logo.clientName}</td>
-                              <td style={tdStyle}><code>{logo.logoPath}</code></td>
-                              <td style={tdStyle}>{logo.websiteUrl || 'N/A'}</td>
-                              <td style={tdStyle}>
-                                <div className="flex gap-2">
-                                  <button onClick={() => launchModal('logo', logo)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Edit">
-                                    <Edit3 size={14} />
-                                  </button>
-                                  <button onClick={() => handleDelete('logo', logo._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
+                )}
+              </div>
+            )}
 
-              {/* TABS: 5. CASE STUDIES (BLOGS) */}
-              {activeTab === 'blogs' && (
-                <div>
-                  <div className="flex justify-between align-center" style={{ marginBottom: '24px' }}>
-                    <h2 style={{ fontSize: '24px', color: 'var(--text-main)' }}>Manage Case Studies & Blog Posts</h2>
-                    <button onClick={() => launchModal('blog')} className="btn btn-primary flex align-center gap-1" style={{ padding: '8px 16px', fontSize: '14px' }}>
-                      <Plus size={16} /> Publish Post
-                    </button>
+            {/* ─── LOGOS ──────────────────────────────────────────────────────── */}
+            {activeTab === 'logos' && (
+              <div>
+                <div style={sectionHeaderStyle}>
+                  <h2 style={h2Style}>Manage Client Logos</h2>
+                  <button onClick={() => launchModal('logo')} className="btn btn-primary" style={addBtnStyle}>
+                    <Plus size={16} /> Add Logo
+                  </button>
+                </div>
+                {logos.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No logos yet.</p> : (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginTop: '16px' }}>
+                    {logos.map(logo => (
+                      <div key={logo._id} style={{ border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', textAlign: 'center', backgroundColor: 'var(--bg-app)' }}>
+                        <img
+                          src={`data:${logo.logoMimeType};base64,${logo.logoData}`}
+                          alt={logo.clientName}
+                          style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain', marginBottom: '10px' }}
+                        />
+                        <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>{logo.clientName}</div>
+                        {logo.websiteUrl && <div style={{ fontSize: '11px', color: 'var(--text-muted)', wordBreak: 'break-all' }}>{logo.websiteUrl}</div>}
+                        <div style={{ display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'center' }}>
+                          <button onClick={() => launchModal('logo', logo)} className="btn btn-secondary" style={{ padding: '5px 10px' }}><Edit3 size={13} /></button>
+                          <button onClick={() => handleDelete('logo', logo._id)} className="btn btn-danger" style={{ padding: '5px 10px' }}><Trash2 size={13} /></button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  {blogs.length === 0 ? (
-                    <p style={{ color: 'var(--text-muted)' }}>No case studies published yet.</p>
-                  ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={tableStyle}>
-                        <thead>
-                          <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                            <th style={thStyle}>Case Study Title</th>
-                            <th style={thStyle}>Summary</th>
-                            <th style={thStyle}>Associated Industry</th>
-                            <th style={thStyle}>Author & Date</th>
-                            <th style={thStyle}>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {blogs.map((b) => (
-                            <tr key={b._id} style={{ borderBottom: '1px solid var(--border)' }}>
-                              <td style={{ ...tdStyle, fontWeight: 600 }}>{b.title}</td>
-                              <td style={{ ...tdStyle, maxWidth: '220px' }}>{b.summary}</td>
-                              <td style={tdStyle}>{b.sector ? b.sector.name : 'General'}</td>
-                              <td style={tdStyle}>
-                                <div>{b.author}</div>
-                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(b.datePublished).toLocaleDateString()}</div>
-                              </td>
-                              <td style={tdStyle}>
-                                <div className="flex gap-2">
-                                  <button onClick={() => launchModal('blog', b)} className="btn btn-secondary" style={{ padding: '6px 10px' }} title="Edit">
-                                    <Edit3 size={14} />
-                                  </button>
-                                  <button onClick={() => handleDelete('blog', b._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
-                                    <Trash2 size={14} />
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                )}
+              </div>
+            )}
+
+            {/* ─── BLOGS ──────────────────────────────────────────────────────── */}
+            {activeTab === 'blogs' && (
+              <div>
+                <div style={sectionHeaderStyle}>
+                  <h2 style={h2Style}>Manage Case Studies & Blog Posts</h2>
+                  <button onClick={() => launchModal('blog')} className="btn btn-primary" style={addBtnStyle}>
+                    <Plus size={16} /> Publish Post
+                  </button>
                 </div>
-              )}
+                {blogs.length === 0 ? <p style={{ color: 'var(--text-muted)' }}>No posts yet.</p> : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={tableStyle}>
+                      <thead>
+                        <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                          {['Title', 'Summary', 'Industry', 'Author & Date', 'Actions'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {blogs.map(b => (
+                          <tr key={b._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                            <td style={{ ...tdStyle, fontWeight: 600 }}>{b.title}</td>
+                            <td style={{ ...tdStyle, maxWidth: '220px' }}>{b.summary}</td>
+                            <td style={tdStyle}>{b.sector?.name || 'General'}</td>
+                            <td style={tdStyle}>
+                              <div>{b.author}</div>
+                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{new Date(b.datePublished).toLocaleDateString()}</div>
+                            </td>
+                            <td style={tdStyle}>
+                              <div style={{ display: 'flex', gap: '8px' }}>
+                                <button onClick={() => launchModal('blog', b)} className="btn btn-secondary" style={{ padding: '6px 10px' }}><Edit3 size={14} /></button>
+                                <button onClick={() => handleDelete('blog', b._id)} className="btn btn-danger" style={{ padding: '6px 10px' }}><Trash2 size={14} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
 
-            </div>
-          )}
+          </div>
+        )}
+      </main>
 
-        </div>
-      </div>
-
-      {/* SECURE POPUP EDIT FORM MODAL CONTAINER */}
+      {/* ── MODAL ─────────────────────────────────────────────────────────────── */}
       {showModal && (
-        <div className="modal-overlay flex align-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 2000, padding: '24px' }}>
-          <div className="modal-content glass anim-fade-in" style={{ backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: 'var(--radius-lg)', maxWidth: '680px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left' }}>
-            <button onClick={() => { setShowModal(false); setEditItem(null); }} className="btn-icon" style={{ position: 'absolute', top: '20px', right: '20px' }}>
-              <X size={20} />
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.65)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+          <div className="glass anim-fade-in" style={{ backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: '16px', maxWidth: '720px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left' }}>
+            <button onClick={() => { setShowModal(false); setEditItem(null); setErrorMsg(''); }} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+              <X size={22} />
             </button>
 
-            <h2 style={{ fontSize: '24px', color: 'var(--text-main)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-              {editItem ? 'Edit' : 'Create New'} {modalType.toUpperCase()}
+            <h2 style={{ fontSize: '22px', color: 'var(--text-main)', marginBottom: '24px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+              {editItem ? 'Edit' : 'Create New'} {modalType.charAt(0).toUpperCase() + modalType.slice(1)}
             </h2>
 
             <form onSubmit={handleFormSubmit}>
-              
-              {/* MODAL VIEW: SECTOR FORM */}
+
+              {/* SECTOR FORM */}
               {modalType === 'sector' && (
                 <div>
                   <div className="form-group">
                     <label className="form-label">Sector / Solution Name</label>
-                    <input type="text" value={sectorForm.name} onChange={(e) => setSectorForm({ ...sectorForm, name: e.target.value })} required className="form-control" placeholder="HEALTHCARE" />
+                    <input type="text" value={sectorForm.name} onChange={e => setSectorForm({ ...sectorForm, name: e.target.value })} required className="form-control" placeholder="HEALTHCARE" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Description Summary</label>
-                    <textarea value={sectorForm.description} onChange={(e) => setSectorForm({ ...sectorForm, description: e.target.value })} required className="form-control" rows="4" placeholder="Brief copy summary..."></textarea>
+                    <label className="form-label">Description</label>
+                    <textarea value={sectorForm.description} onChange={e => setSectorForm({ ...sectorForm, description: e.target.value })} required className="form-control" rows="3" placeholder="Brief description…" />
                   </div>
-                  <div className="grid grid-2" style={{ gap: '16px' }}>
-                    <div className="form-group">
-                      <label className="form-label">Lucide Icon Name</label>
-                      <input type="text" value={sectorForm.icon} onChange={(e) => setSectorForm({ ...sectorForm, icon: e.target.value })} required className="form-control" placeholder="activity, scale, truck, briefcase..." />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Features (comma-separated)</label>
-                      <input type="text" value={sectorForm.features} onChange={(e) => setSectorForm({ ...sectorForm, features: e.target.value })} className="form-control" placeholder="Billing, Inventory, Logistics..." />
-                    </div>
+                  <div className="form-group">
+                    <label className="form-label">Lucide Icon Name</label>
+                    <input type="text" value={sectorForm.icon} onChange={e => setSectorForm({ ...sectorForm, icon: e.target.value })} required className="form-control" placeholder="activity, scale, truck, briefcase…" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Features <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(one per line)</span></label>
+                    <textarea
+                      value={sectorForm.features}
+                      onChange={e => setSectorForm({ ...sectorForm, features: e.target.value })}
+                      className="form-control"
+                      rows="8"
+                      placeholder={"Patient Registration\nAppointment Scheduling\nBilling & Insurance Claims\nPharmacy Management"}
+                      style={{ fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.6' }}
+                    />
+                    <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>Enter each feature on its own line. No commas needed.</p>
                   </div>
                 </div>
               )}
 
-              {/* MODAL VIEW: TESTIMONIAL FORM */}
+              {/* TESTIMONIAL FORM */}
               {modalType === 'testimonial' && (
                 <div>
-                  <div className="grid grid-2" style={{ gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div className="form-group">
-                      <label className="form-label">Client Representative Name</label>
-                      <input type="text" value={testimonialForm.clientName} onChange={(e) => setTestimonialForm({ ...testimonialForm, clientName: e.target.value })} required className="form-control" placeholder="Dr. Abdul Qadir" />
+                      <label className="form-label">Client Name</label>
+                      <input type="text" value={testimonialForm.clientName} onChange={e => setTestimonialForm({ ...testimonialForm, clientName: e.target.value })} required className="form-control" placeholder="Dr. Abdul Qadir" />
                     </div>
                     <div className="form-group">
                       <label className="form-label">Client Position</label>
-                      <input type="text" value={testimonialForm.clientPosition} onChange={(e) => setTestimonialForm({ ...testimonialForm, clientPosition: e.target.value })} required className="form-control" placeholder="Medical Director" />
+                      <input type="text" value={testimonialForm.clientPosition} onChange={e => setTestimonialForm({ ...testimonialForm, clientPosition: e.target.value })} required className="form-control" placeholder="Medical Director" />
                     </div>
                   </div>
-                  <div className="grid grid-2" style={{ gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div className="form-group">
                       <label className="form-label">Company Name</label>
-                      <input type="text" value={testimonialForm.companyName} onChange={(e) => setTestimonialForm({ ...testimonialForm, companyName: e.target.value })} required className="form-control" placeholder="Adarsh Multispecialty Clinic" />
+                      <input type="text" value={testimonialForm.companyName} onChange={e => setTestimonialForm({ ...testimonialForm, companyName: e.target.value })} required className="form-control" placeholder="Adarsh Clinic" />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Associated Sector / Solution</label>
-                      <select value={testimonialForm.sectorId} onChange={(e) => setTestimonialForm({ ...testimonialForm, sectorId: e.target.value })} className="form-control" style={{ height: '53px' }}>
+                      <label className="form-label">Associated Sector</label>
+                      <select value={testimonialForm.sectorId} onChange={e => setTestimonialForm({ ...testimonialForm, sectorId: e.target.value })} className="form-control" style={{ height: '53px' }}>
                         <option value="">General Review</option>
                         {sectors.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
                       </select>
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Testimonial feedback quotes</label>
-                    <textarea value={testimonialForm.feedback} onChange={(e) => setTestimonialForm({ ...testimonialForm, feedback: e.target.value })} required className="form-control" rows="4" placeholder="Their ERPNext implementation transformed our operations..."></textarea>
+                    <label className="form-label">Testimonial Feedback</label>
+                    <textarea value={testimonialForm.feedback} onChange={e => setTestimonialForm({ ...testimonialForm, feedback: e.target.value })} required className="form-control" rows="4" placeholder="Their ERPNext implementation transformed our operations…" />
                   </div>
                 </div>
               )}
 
-              {/* MODAL VIEW: LOGO FORM */}
+              {/* LOGO FORM */}
               {modalType === 'logo' && (
                 <div>
                   <div className="form-group">
                     <label className="form-label">Client Name</label>
-                    <input type="text" value={logoForm.clientName} onChange={(e) => setLogoForm({ ...logoForm, clientName: e.target.value })} required className="form-control" placeholder="SLA Group" />
+                    <input type="text" value={logoForm.clientName} onChange={e => setLogoForm({ ...logoForm, clientName: e.target.value })} required className="form-control" placeholder="SLA Group" />
                   </div>
+
+                  {/* Image Upload Area */}
                   <div className="form-group">
-                    <label className="form-label">Logo Icon URL / Local Path</label>
-                    <input type="text" value={logoForm.logoPath} onChange={(e) => setLogoForm({ ...logoForm, logoPath: e.target.value })} required className="form-control" placeholder="/assets/logos/client_sla.png" />
+                    <label className="form-label">Logo Image</label>
+                    <div
+                      onClick={() => fileInputRef.current?.click()}
+                      style={{
+                        border: '2px dashed var(--border)',
+                        borderRadius: '12px',
+                        padding: '24px',
+                        textAlign: 'center',
+                        cursor: 'pointer',
+                        backgroundColor: 'var(--bg-app)',
+                        transition: 'border-color 0.15s',
+                        position: 'relative'
+                      }}
+                    >
+                      {logoForm.previewUrl ? (
+                        <div>
+                          <img src={logoForm.previewUrl} alt="Preview" style={{ maxHeight: '80px', maxWidth: '100%', objectFit: 'contain', marginBottom: '10px' }} />
+                          <p style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Click to change image</p>
+                        </div>
+                      ) : (
+                        <div>
+                          <Upload size={32} style={{ color: 'var(--text-muted)', marginBottom: '10px' }} />
+                          <p style={{ color: 'var(--text-muted)', fontSize: '14px', margin: 0 }}>Click to upload logo image</p>
+                          <p style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px' }}>PNG, JPG, SVG, WebP supported</p>
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoFilePick}
+                      style={{ display: 'none' }}
+                    />
+                    {!logoForm.logoData && editItem && (
+                      <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                        <Eye size={12} style={{ display: 'inline', marginRight: '4px' }} />
+                        Leave empty to keep the existing logo image.
+                      </p>
+                    )}
                   </div>
+
                   <div className="form-group">
                     <label className="form-label">Client Website URL (Optional)</label>
-                    <input type="url" value={logoForm.websiteUrl} onChange={(e) => setLogoForm({ ...logoForm, websiteUrl: e.target.value })} className="form-control" placeholder="https://sla.in" />
+                    <input type="url" value={logoForm.websiteUrl} onChange={e => setLogoForm({ ...logoForm, websiteUrl: e.target.value })} className="form-control" placeholder="https://sla.in" />
                   </div>
                 </div>
               )}
 
-              {/* MODAL VIEW: BLOG / CASE STUDY FORM */}
+              {/* BLOG / CASE STUDY FORM */}
               {modalType === 'blog' && (
                 <div>
                   <div className="form-group">
                     <label className="form-label">Case Study Title</label>
-                    <input type="text" value={blogForm.title} onChange={(e) => setBlogForm({ ...blogForm, title: e.target.value })} required className="form-control" placeholder="Case Study: Automating Clinic operations" />
+                    <input type="text" value={blogForm.title} onChange={e => setBlogForm({ ...blogForm, title: e.target.value })} required className="form-control" placeholder="Case Study: Automating Clinic Operations with ERPNext" />
                   </div>
-                  <div className="grid grid-2" style={{ gap: '16px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div className="form-group">
-                      <label className="form-label">Case Study Summary</label>
-                      <input type="text" value={blogForm.summary} onChange={(e) => setBlogForm({ ...blogForm, summary: e.target.value })} required className="form-control" placeholder="Brief summary of efficiency improvements..." />
+                      <label className="form-label">Summary</label>
+                      <input type="text" value={blogForm.summary} onChange={e => setBlogForm({ ...blogForm, summary: e.target.value })} required className="form-control" placeholder="Brief summary…" />
                     </div>
                     <div className="form-group">
-                      <label className="form-label">Associated Solution Sector</label>
-                      <select value={blogForm.sectorId} onChange={(e) => setBlogForm({ ...blogForm, sectorId: e.target.value })} className="form-control" style={{ height: '53px' }}>
+                      <label className="form-label">Associated Sector</label>
+                      <select value={blogForm.sectorId} onChange={e => setBlogForm({ ...blogForm, sectorId: e.target.value })} className="form-control" style={{ height: '53px' }}>
                         <option value="">General Post</option>
                         {sectors.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
                       </select>
                     </div>
                   </div>
                   <div className="form-group">
-                    <label className="form-label">SEO/AEO Meta Keywords (comma-separated)</label>
-                    <input type="text" value={blogForm.metaKeywords} onChange={(e) => setBlogForm({ ...blogForm, metaKeywords: e.target.value })} className="form-control" placeholder="healthcare erp, hospital software, erpnext healthcare..." />
+                    <label className="form-label">SEO / AEO Meta Keywords <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(comma-separated)</span></label>
+                    <input type="text" value={blogForm.metaKeywords} onChange={e => setBlogForm({ ...blogForm, metaKeywords: e.target.value })} className="form-control" placeholder="healthcare erp, hospital software, erpnext healthcare…" />
                   </div>
                   <div className="form-group">
-                    <label className="form-label">Case Study Rich Content (Markdown format supported)</label>
-                    <textarea value={blogForm.content} onChange={(e) => setBlogForm({ ...blogForm, content: e.target.value })} required className="form-control" rows="12" placeholder="# Header 1\n## Subheader\nUse **bold** or bullet lists (- item)..." style={{ fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.4' }}></textarea>
+                    <label className="form-label">Rich Content <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(Markdown supported)</span></label>
+                    <textarea value={blogForm.content} onChange={e => setBlogForm({ ...blogForm, content: e.target.value })} required className="form-control" rows="14" placeholder={"# Heading\n## Subheading\n\nUse **bold**, *italic*, or:\n- Bullet list item\n- Another item"} style={{ fontFamily: 'monospace', fontSize: '13px', lineHeight: '1.5' }} />
                   </div>
                 </div>
               )}
 
-              <button type="submit" className="btn btn-primary flex align-center gap-1" style={{ width: '100%', height: '48px', marginTop: '16px' }}>
-                Save & Publish
+              <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '50px', marginTop: '16px', fontSize: '15px' }}>
+                Save &amp; Publish
               </button>
             </form>
           </div>
@@ -659,41 +670,27 @@ export default function AdminDashboard({ token }) {
   );
 }
 
-// Side Navigation buttons style
-const tabBtnStyle = (isActive) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  width: '100%',
-  padding: '12px 18px',
-  borderRadius: '8px',
-  border: 'none',
-  textAlign: 'left',
-  fontWeight: '600',
-  fontSize: '14px',
-  cursor: 'pointer',
-  backgroundColor: isActive ? 'var(--primary)' : 'transparent',
-  color: isActive ? 'white' : 'var(--text-muted)',
-  transition: 'all var(--transition-fast)'
-});
+// Shared style tokens
+const h2Style = { fontSize: '22px', color: 'var(--text-main)', marginBottom: '24px' };
+const sectionHeaderStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' };
+const addBtnStyle = { display: 'flex', alignItems: 'center', gap: '6px', padding: '9px 18px', fontSize: '14px' };
 
-// Admin listings table layouts
 const tableStyle = {
   width: '100%',
   borderCollapse: 'collapse',
   textAlign: 'left',
-  fontSize: '14px',
-  marginTop: '12px'
+  fontSize: '14px'
 };
 
 const thStyle = {
-  padding: '16px 12px',
+  padding: '14px 12px',
   color: 'var(--text-main)',
-  fontWeight: '600'
+  fontWeight: 600,
+  whiteSpace: 'nowrap'
 };
 
 const tdStyle = {
-  padding: '16px 12px',
+  padding: '14px 12px',
   color: 'var(--text-muted)',
   verticalAlign: 'middle'
 };

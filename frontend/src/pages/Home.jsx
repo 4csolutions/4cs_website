@@ -73,13 +73,13 @@ export default function Home() {
         <div className="container grid grid-2 align-center">
           <div className="text-left anim-slide-left">
             <span style={{ fontSize: '14px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 16px', borderRadius: '24px', fontWeight: 600, display: 'inline-block', marginBottom: '16px' }}>
-              Independent ERPNext Experts | 5+ Years Experience
+              ERPNext Experts | 5+ Years Experience
             </span>
             <h1 style={{ fontSize: '56px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '24px', lineHeight: 1.15 }}>
               Scale Without Limits: Zero-License <span style={{ color: 'var(--primary)' }}>ERPNext</span> Solutions
             </h1>
             <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '520px', lineHeight: 1.6 }}>
-              We are a premium independent systems integrator specializing in high-domain custom modules. We automate operations in Healthcare, Logistics, Legal, and Project Contracting with zero software user license fees.
+              We are a certified enterprise systems integrator specializing in high-domain custom modules. We automate operations in Healthcare, Logistics, Legal, and Project Contracting with zero software user license fees.
             </p>
             <div className="flex gap-4 wrap">
               <Link to="/whyerpnext" className="btn btn-primary">
@@ -132,9 +132,17 @@ export default function Home() {
             {/* Double the list to make ticker infinite */}
             {[...logos, ...logos].map((logo, index) => (
               <div className="ticker-item" key={index}>
-                <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
-                  {logo.clientName}
-                </span>
+                {logo.logoData ? (
+                  <img
+                    src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
+                    alt={logo.clientName}
+                    style={{ height: '36px', maxWidth: '120px', objectFit: 'contain', filter: 'grayscale(0.3)', opacity: 0.85 }}
+                  />
+                ) : (
+                  <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
+                    {logo.clientName}
+                  </span>
+                )}
               </div>
             ))}
           </div>

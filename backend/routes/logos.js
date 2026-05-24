@@ -4,7 +4,7 @@ import { authenticateAdmin } from './auth.js';
 
 const router = express.Router();
 
-// GET all logos
+// GET all logos (returns base64 data URI for rendering)
 router.get('/', async (req, res) => {
   try {
     const logos = await ClientLogo.find().sort({ createdAt: -1 });
@@ -14,17 +14,18 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST new client logo (Admin Secure)
+// POST new client logo with base64 image (Admin Secure)
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
-    const { clientName, logoPath, websiteUrl } = req.body;
-    if (!clientName || !logoPath) {
-      return res.status(400).json({ error: 'Client name and logo path are required' });
+    const { clientName, logoData, logoMimeType, websiteUrl } = req.body;
+    if (!clientName || !logoData) {
+      return res.status(400).json({ error: 'Client name and logo image are required' });
     }
 
     const newLogo = await ClientLogo.create({
       clientName,
-      logoPath,
+      logoData,
+      logoMimeType: logoMimeType || 'image/png',
       websiteUrl: websiteUrl || ''
     });
 
@@ -37,14 +38,15 @@ router.post('/', authenticateAdmin, async (req, res) => {
 // PUT update client logo (Admin Secure)
 router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { clientName, logoPath, websiteUrl } = req.body;
+    const { clientName, logoData, logoMimeType, websiteUrl } = req.body;
     const logo = await ClientLogo.findById(req.params.id);
     if (!logo) {
       return res.status(404).json({ error: 'Client logo not found' });
     }
 
     if (clientName) logo.clientName = clientName;
-    if (logoPath) logo.logoPath = logoPath;
+    if (logoData) logo.logoData = logoData;
+    if (logoMimeType) logo.logoMimeType = logoMimeType;
     if (websiteUrl !== undefined) logo.websiteUrl = websiteUrl;
 
     const updatedLogo = await logo.save();
@@ -61,7 +63,7 @@ router.delete('/:id', authenticateAdmin, async (req, res) => {
     if (!logo) {
       return res.status(404).json({ error: 'Client logo not found' });
     }
-    res.json({ message: 'Client logo deleted successfully', logo });
+    res.json({ message: 'Client logo deleted successfully', deleted: logo });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

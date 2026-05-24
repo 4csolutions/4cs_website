@@ -200,7 +200,7 @@ function ScrollToTop() {
                 </p>
                 <div className="flex align-center gap-2 mt-2 wrap">
                   <span style={{ fontSize: '12px', backgroundColor: 'rgba(231,29,54,0.1)', color: 'var(--error)', padding: '4px 10px', borderRadius: '12px', fontWeight: 600 }}>
-                    Independent Integrator
+                    ERPNext Integrator
                   </span>
                   <span style={{ fontSize: '12px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '4px 10px', borderRadius: '12px', fontWeight: 600 }}>
                     5+ Years Experience
@@ -404,7 +404,7 @@ function WhatsAppChat() {
           <div className="p-4 max-h-[360px] overflow-y-auto bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200">
             {/* System Info */}
             <div className="bg-emerald-50 dark:bg-slate-900/50 border border-emerald-100 dark:border-slate-800 rounded-xl p-3 mb-3 text-xs text-slate-600 dark:text-slate-400 text-left leading-relaxed">
-              <strong>Premium Independent Integrator:</strong> We possess 5+ years of custom implementation expertise. We build customized workflows to help you scale without per-user licensing fees.
+              <strong>Enterprise Systems Integrator:</strong> We possess 5+ years of custom implementation expertise. We build customized workflows to help you scale without per-user licensing fees.
             </div>
 
             {/* Welcome Bubble */}

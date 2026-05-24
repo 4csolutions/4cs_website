@@ -42,7 +42,7 @@ export default function AboutServices() {
       <section className="section page-header" style={{ padding: '128px 0 64px 0', background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-app) 100%)', borderBottom: '1px solid var(--border)' }}>
         <div className="container text-center">
           <span style={{ fontSize: '13px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 16px', borderRadius: '24px', fontWeight: 600, display: 'inline-block', marginBottom: '16px' }}>
-            Premium Independent Systems Integrators
+            Enterprise Systems Integrator
           </span>
           <h1 style={{ fontSize: '48px', color: 'var(--text-main)', marginBottom: '16px' }}>
             About 4C Solutions

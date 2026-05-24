@@ -6,9 +6,15 @@ const ClientLogoSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  logoPath: {
+  // Base64-encoded image stored directly in the database
+  logoData: {
     type: String,
     required: true
+  },
+  logoMimeType: {
+    type: String,
+    required: true,
+    default: 'image/png'
   },
   websiteUrl: {
     type: String,
