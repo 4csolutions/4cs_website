@@ -1,6 +1,8 @@
 import express from 'express';
 import Sector from '../models/Sector.js';
 import Testimonial from '../models/Testimonial.js';
+import ClientLogo from '../models/ClientLogo.js';
+import Blog from '../models/Blog.js';
 import { authenticateAdmin } from './auth.js';
 
 const router = express.Router();
@@ -26,7 +28,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET single sector by slug (including testimonials!)
+// GET single sector by slug (including testimonials, logos, and latest 3 blogs!)
 router.get('/slug/:slug', async (req, res) => {
   try {
     const sector = await Sector.findOne({ slug: req.params.slug.toLowerCase() });
@@ -36,7 +38,14 @@ router.get('/slug/:slug', async (req, res) => {
     
     // Fetch testimonials linked to this sector
     const testimonials = await Testimonial.find({ sector: sector._id });
-    res.json({ sector, testimonials });
+    
+    // Fetch client logos linked to this sector
+    const logos = await ClientLogo.find({ sector: sector._id });
+    
+    // Fetch latest 3 blogs/case studies linked to this sector
+    const blogs = await Blog.find({ sector: sector._id }).sort({ datePublished: -1 }).limit(3);
+    
+    res.json({ sector, testimonials, logos, blogs });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

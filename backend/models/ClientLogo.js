@@ -13,6 +13,11 @@ const ClientLogoSchema = new mongoose.Schema({
   websiteUrl: {
     type: String,
     default: ''
+  },
+  sector: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Sector',
+    default: null
   }
 }, {
   timestamps: true

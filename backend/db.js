@@ -157,20 +157,47 @@ const seedData = async () => {
 
     // 4. Seed Client Logos
     const logoCount = await ClientLogo.countDocuments();
-    if (logoCount === 0) {
+    if (logoCount === 0 && seededSectors.length > 0) {
       console.log('Seeding initial client logos...');
+      const healthcareSector = seededSectors.find(s => s.slug === 'healthcare');
+      const legalSector = seededSectors.find(s => s.slug === 'legal');
+      const logisticsSector = seededSectors.find(s => s.slug === 'logistics');
+      const contractingSector = seededSectors.find(s => s.slug === 'project-contracting');
+
       const logos = [
-        { clientName: 'SLA Group', logoPath: '/assets/logos/client_sla.png', websiteUrl: 'https://sla.in' },
-        { clientName: 'PVI Industries', logoPath: '/assets/logos/client_pvi.png', websiteUrl: 'https://pvi.com' },
-        { clientName: 'STC Infra', logoPath: '/assets/logos/client_stc.png', websiteUrl: 'https://stcinfra.com' },
-        { clientName: 'Methaq Co.', logoPath: '/assets/logos/client_methaq.png', websiteUrl: 'https://methaq.sa' },
-        { clientName: 'Spollex Tech', logoPath: '/assets/logos/client_spollex.png', websiteUrl: 'https://spollex.com' },
-        { clientName: 'Adarsh Clinics', logoPath: '/assets/logos/client_adarsh.png', websiteUrl: 'https://adarshclinics.in' },
-        { clientName: 'Kalaburagi Logistics', logoPath: '/assets/logos/client_klogistics.png', websiteUrl: '#' },
-        { clientName: 'Karnatak Contracting', logoPath: '/assets/logos/client_kcontracting.png', websiteUrl: '#' }
+        { clientName: 'SLA Group', logoPath: '/assets/logos/client_sla.png', websiteUrl: 'https://sla.in', sector: legalSector ? legalSector._id : null },
+        { clientName: 'PVI Industries', logoPath: '/assets/logos/client_pvi.png', websiteUrl: 'https://pvi.com', sector: healthcareSector ? healthcareSector._id : null },
+        { clientName: 'STC Infra', logoPath: '/assets/logos/client_stc.png', websiteUrl: 'https://stcinfra.com', sector: contractingSector ? contractingSector._id : null },
+        { clientName: 'Methaq Co.', logoPath: '/assets/logos/client_methaq.png', websiteUrl: 'https://methaq.sa', sector: logisticsSector ? logisticsSector._id : null },
+        { clientName: 'Spollex Tech', logoPath: '/assets/logos/client_spollex.png', websiteUrl: 'https://spollex.com', sector: logisticsSector ? logisticsSector._id : null },
+        { clientName: 'Adarsh Clinics', logoPath: '/assets/logos/client_adarsh.png', websiteUrl: 'https://adarshclinics.in', sector: healthcareSector ? healthcareSector._id : null },
+        { clientName: 'Kalaburagi Logistics', logoPath: '/assets/logos/client_klogistics.png', websiteUrl: '#', sector: logisticsSector ? logisticsSector._id : null },
+        { clientName: 'Karnatak Contracting', logoPath: '/assets/logos/client_kcontracting.png', websiteUrl: '#', sector: contractingSector ? contractingSector._id : null }
       ];
       await ClientLogo.insertMany(logos);
       console.log('Client logos seeded successfully.');
+    } else if (seededSectors.length > 0) {
+      // In-place updates to map existing seeded logos to sectors!
+      console.log('Updating existing seeded client logos with sector associations...');
+      const healthcareSector = seededSectors.find(s => s.slug === 'healthcare');
+      const legalSector = seededSectors.find(s => s.slug === 'legal');
+      const logisticsSector = seededSectors.find(s => s.slug === 'logistics');
+      const contractingSector = seededSectors.find(s => s.slug === 'project-contracting');
+
+      if (legalSector) await ClientLogo.updateOne({ clientName: 'SLA Group' }, { $set: { sector: legalSector._id } });
+      if (healthcareSector) {
+        await ClientLogo.updateOne({ clientName: 'PVI Industries' }, { $set: { sector: healthcareSector._id } });
+        await ClientLogo.updateOne({ clientName: 'Adarsh Clinics' }, { $set: { sector: healthcareSector._id } });
+      }
+      if (contractingSector) {
+        await ClientLogo.updateOne({ clientName: 'STC Infra' }, { $set: { sector: contractingSector._id } });
+        await ClientLogo.updateOne({ clientName: 'Karnatak Contracting' }, { $set: { sector: contractingSector._id } });
+      }
+      if (logisticsSector) {
+        await ClientLogo.updateOne({ clientName: 'Methaq Co.' }, { $set: { sector: logisticsSector._id } });
+        await ClientLogo.updateOne({ clientName: 'Spollex Tech' }, { $set: { sector: logisticsSector._id } });
+        await ClientLogo.updateOne({ clientName: 'Kalaburagi Logistics' }, { $set: { sector: logisticsSector._id } });
+      }
     }
 
     // 5. Seed Blogs / Case Studies

@@ -240,9 +240,9 @@ export default function Home() {
                   </div>
 
                   <div style={{ padding: '0 24px 24px 24px' }}>
-                    <button onClick={() => selectSector(sector)} className="btn btn-secondary flex align-center justify-center gap-1" style={{ padding: '8px 18px', fontSize: '13px', width: '100%' }}>
+                    <Link to={`/industries/${sector.slug}`} className="btn btn-secondary flex align-center justify-center gap-1" style={{ padding: '8px 18px', fontSize: '13px', width: '100%', textDecoration: 'none' }}>
                       Explore Features <ChevronRight size={16} />
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}

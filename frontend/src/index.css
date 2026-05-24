@@ -350,3 +350,45 @@ img {
 .anim-fade-in {
   animation: fadeIn var(--transition-normal) forwards;
 }
+
+/* Navbar Dropdown styling */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: var(--bg-card);
+  min-width: 240px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  z-index: 10001;
+  padding: 8px 0;
+  margin-top: 4px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.dropdown-content a {
+  color: var(--text-muted);
+  padding: 10px 20px;
+  text-decoration: none;
+  display: block;
+  font-size: 14px;
+  text-align: left;
+  font-weight: 500;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+}
+
+.dropdown-content a:hover,
+.dropdown-content a.active-link {
+  background-color: var(--primary-glow);
+  color: var(--primary);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}

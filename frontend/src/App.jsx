@@ -11,16 +11,29 @@ import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
+import IndustryDetail from './pages/IndustryDetail';
 
 export default function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [adminToken, setAdminToken] = useState(localStorage.getItem('adminToken') || null);
+  const [sectors, setSectors] = useState([]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    fetch('/api/sectors')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setSectors(data);
+        }
+      })
+      .catch(err => console.error('Error loading industries list for dropdown:', err));
+  }, []);
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
@@ -55,6 +68,25 @@ export default function App() {
             {/* Desktop Navigation Links */}
             <nav className="desktop-nav flex align-center gap-6" style={{ display: 'flex' }}>
               <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Home</NavLink>
+              
+              {/* Dynamic Industries Dropdown */}
+              <div className="dropdown" style={{ display: 'inline-block' }}>
+                <span className="nav-link flex align-center" style={{ ...navLinkStyle, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  Industries <span style={{ fontSize: '9px' }}>▼</span>
+                </span>
+                <div className="dropdown-content">
+                  {sectors.map(sec => (
+                    <NavLink 
+                      key={sec._id} 
+                      to={`/industries/${sec.slug}`} 
+                      className={({ isActive }) => isActive ? 'active-link' : ''}
+                    >
+                      {sec.name}
+                    </NavLink>
+                  ))}
+                </div>
+              </div>
+
               <NavLink to="/whyerpnext" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Why ERPNext</NavLink>
               <NavLink to="/about-us" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>About & Services</NavLink>
               <NavLink to="/case-studies" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Case Studies</NavLink>
@@ -95,9 +127,27 @@ export default function App() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="mobile-drawer glass anim-fade-in" style={{ position: 'fixed', top: '72px', left: 0, right: 0, padding: '24px', zIndex: 10000, borderBottom: '1px solid var(--border)' }}>
+          <div className="mobile-drawer glass anim-fade-in" style={{ position: 'fixed', top: '72px', left: 0, right: 0, padding: '24px', zIndex: 10000, borderBottom: '1px solid var(--border)', maxHeight: 'calc(100vh - 72px)', overflowY: 'auto' }}>
             <nav className="flex flex-column gap-4" style={{ textAlign: 'center' }}>
               <Link to="/" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Home</Link>
+              
+              {/* Dynamic Mobile Industries Drawer */}
+              <div className="flex flex-column gap-2" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+                <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Industries We Serve</span>
+                <div className="flex flex-column gap-2" style={{ paddingLeft: '8px' }}>
+                  {sectors.map(sec => (
+                    <Link 
+                      key={sec._id} 
+                      to={`/industries/${sec.slug}`} 
+                      onClick={() => setMobileMenuOpen(false)} 
+                      style={{ ...mobileLinkStyle, fontSize: '14px', padding: '4px 0' }}
+                    >
+                      {sec.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
               <Link to="/whyerpnext" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Why ERPNext</Link>
               <Link to="/about-us" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>About & Services</Link>
               <Link to="/case-studies" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Case Studies</Link>
@@ -116,6 +166,7 @@ export default function App() {
         <main className="main-content" style={{ flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/industries/:slug" element={<IndustryDetail />} />
             <Route path="/whyerpnext" element={<WhyERPNext />} />
             <Route path="/about-us" element={<AboutServices />} />
             <Route path="/case-studies" element={<BlogList />} />
