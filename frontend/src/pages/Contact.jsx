@@ -105,7 +105,7 @@ export default function Contact() {
                 <div style={iconBoxStyle}><Phone size={22} /></div>
                 <div>
                   <h4 style={{ fontSize: '15px', color: 'var(--text-main)', fontWeight: 600 }}>Call Center</h4>
-                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>+91 8472 254105</span>
+                  <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>+91 98865 79707</span>
                 </div>
               </div>
 
