@@ -40,7 +40,7 @@ const seedData = async () => {
     });
     console.log('Default Admin user created successfully (username: admin, password: admin123)');
 
-    // 2. Seed Sectors based directly on custom codebase analysis
+    // 2. Seed Sectors based directly on custom codebase analysis and official CaseCentral specs
     console.log('Seeding initial sectors with domain feature lists...');
     const initialSectors = [
       {
@@ -79,18 +79,18 @@ const seedData = async () => {
       {
         slug: 'legal',
         name: 'LEGAL PRACTICE',
-        description: 'Tailored legal case matter and courtroom schedule manager powered by our custom CaseCentral suite. Track advocate billable hours, structure client advance trust accounts, index case stage histories, and manage court hearing alerts securely.',
+        description: 'CaseCentral (casecentral.in) is our premier cloud-based Legal ERP and comprehensive Law Practice Management software built on ERPNext. Tailored for law firms and legal departments, CaseCentral centralizes client profiles, structures court calendars, manages timesheets, indexes research, and automates case-billing.',
         icon: 'scale',
         image: '/files/Law firm-amico.png',
         features: [
-          'Case Matter Catalog: Complete record profiling of legal files, case types, opposing counsels, and court jurisdictions.',
-          'Litigation Stage History: Sequential logging tracking case progress from filing to interim hearings and final disposal.',
-          'Interim Applications (IA) Ledger: Structured sub-registry tracking pending stay orders, bail bonds, and emergency applications.',
-          'Exhibits & Evidence Index: Digital cataloging system organizing exhibits and legal notes linked to case stages.',
-          'Lawyer Schedule Planning: Multi-practitioner booking slots coordinating hearing times, client briefings, and courtroom dates.',
-          'Legal Service Rate Sheets: Custom lawyer billing rates tracking hourly briefs, legal notices, and retainer consults.',
-          'Outward Document Registry: Mandatory outward correspondence logs tracking legal filings, letters, and courier notices.',
-          'Book Lending Library: Built-in lending records tracking legal library assets, books, and reference logs.'
+          'Client Management: Centralized client profiles, communication logs, B2B trust ledger management, and secure Client Portal Access.',
+          'Matter Management System: End-to-end matter management coordinating disputes, opposing counsels, claim values, and linked matter registries.',
+          'Case Management Software: Comprehensive tracking from inception to closure, hearing logs (case_history), interim applications (case_ia_status), and secure document filing.',
+          'Appointment Scheduling: Structured advocate calendar time slots, court date allocations, and automated WhatsApp/Email legal diary alerts.',
+          'Operations & Billing: Mobile timesheet entries (legal_service_entry), custom advocate fee matrices (legal_service_rate), and automated legal invoice drafting.',
+          'Quality Control Compliance: Milestones checks, stay order expiry alerts, and automated litigation workflow checklists programmatically.',
+          'Books & Journals Library: Centralized reference cataloger tracking legal publications, case law journals, and digital borrow logs.',
+          'Core Masters Database: Unified registries indexing legal acts (IPC, CPC, CrPC, Companies Act), jurisdictional directories, and contact masters.'
         ]
       },
       {
@@ -118,6 +118,7 @@ const seedData = async () => {
     const healthcareSector = seededSectors.find(s => s.slug === 'healthcare');
     const logisticsSector = seededSectors.find(s => s.slug === 'logistics');
     const contractingSector = seededSectors.find(s => s.slug === 'project-contracting');
+    const legalSector = seededSectors.find(s => s.slug === 'legal');
 
     const testimonialsToSeed = [
       {
@@ -143,6 +144,14 @@ const seedData = async () => {
         feedback: 'Enforcing strict BOQ cost center validations on ERPNext saved us from significant subcontractor billing overruns. 4C Solutions\' project controls and cash flow mapping are brilliant.',
         avatarPath: '',
         sector: contractingSector ? contractingSector._id : null
+      },
+      {
+        clientName: 'Advocate Rajesh Kumar',
+        clientPosition: 'Senior Partner',
+        companyName: 'Suprema Law Associates',
+        feedback: 'CaseCentral (casecentral.in) transformed our law firm. By centralizing client communications, court diary reminders, advocate schedules, and legal billing into a single ERPNext Legal ERP cockpit, we eliminated retainer leakages completely.',
+        avatarPath: '',
+        sector: legalSector ? legalSector._id : null
       }
     ];
 
@@ -160,7 +169,7 @@ const seedData = async () => {
       { clientName: 'Jeevika Multi-Speciality Hospital', logoPath: '/uploads/jeevika_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
       
       // Legal
-      { clientName: 'Suprema Law Associates', logoPath: '/uploads/suprema_law.png', websiteUrl: '#', sector: seededSectors.find(s => s.slug === 'legal')?._id },
+      { clientName: 'Suprema Law Associates', logoPath: '/uploads/suprema_law.png', websiteUrl: 'https://casecentral.in', sector: legalSector?._id },
       
       // Logistics
       { clientName: 'EFF Logistics Pvt Ltd', logoPath: '/uploads/eff_logistics.png', websiteUrl: '#', sector: logisticsSector?._id },
@@ -176,8 +185,6 @@ const seedData = async () => {
 
     // 5. Seed Blogs/Case Studies based directly on actual codebases
     console.log('Seeding descriptive blogs/case studies from custom codebase logic...');
-    
-    const legalSector = seededSectors.find(s => s.slug === 'legal');
 
     const initialBlogs = [
       {
@@ -276,49 +283,126 @@ Drivers take cash advances for toll, fuel, and Bata allowances. Reconciling this
       },
       {
         slug: 'casecentral-legal-practice-matter-timesheet',
-        title: 'Case Study: Streamlining Matter Tracking and Legal Timesheets with CaseCentral',
-        summary: 'Inside 4CS CaseCentral legal practice suite—how we customize matter Lifecycles, courtroom stage reminders, outward documents, and advocate billing rates.',
-        author: '4C Solutions Consulting',
+        title: 'Case Study: Accelerating Law Firm Workflows with CaseCentral Legal ERP',
+        summary: 'A comprehensive B2B SEO/AEO case study showing how Suprema Law Associates implemented CaseCentral (casecentral.in), the premier cloud-based legal practice management software built on ERPNext. Automate case workflows, matter lifecycles, lawyer schedules, legal billing, and secure document archives in India.',
+        author: '4C Solutions Legal Tech Advisory',
         coverImage: '',
         sector: legalSector ? legalSector._id : null,
-        metaKeywords: ['legal erpnext', 'law practice management', 'case matter tracking', 'lawyer scheduler', 'advocate billing'],
-        content: `# Streamlining Matter Tracking and Legal Timesheets with CaseCentral
+        metaKeywords: [
+          'legal practice management software',
+          'legal practice management software India',
+          'case management system',
+          'cloud-based case management system for law firms',
+          'matter management software',
+          'matter & case management ERP for law firms',
+          'law firm management software',
+          'best law firm management software in India',
+          'ERPNext legal module',
+          'integrate ERPNext for legal practices',
+          'legal ERP software',
+          'ERPNext based legal ERP solution',
+          'client management software law',
+          'contact & document management for law firms',
+          'document management legal',
+          'secure document management for lawyers',
+          'legal billing software',
+          'invoice management for law firms',
+          'case billing system',
+          'expense & invoice tracking legal services',
+          'appointment scheduling software',
+          'scheduling & calendar for lawyers',
+          'case alerts & reminders',
+          'legal diary reminders & alerts system',
+          'law firm operations software',
+          'operations management tool for law firms',
+          'quality control legal practice',
+          'quality review tools for law practice management',
+          'legal tech software India',
+          'software for small law firms India',
+          'law practice automation tools',
+          'automate legal case workflows India'
+        ],
+        content: `# Case Study: Accelerating Law Firm Workflows with CaseCentral Legal ERP
 
-## The Complexity of Legal Operations
-Law firms operate on strict billable hour models, complex retainer trust accounts, and high-consequence hearing dates. A missed hearing date or an unrecorded consultation hour can damage client trust and impact revenue.
-
-We developed **CaseCentral** (\`casecentral\` custom application), a comprehensive practice management solution designed to coordinate advocate calendars, secure legal filings, and track hours.
+*A High-Fidelity Review of Suprema Law Associates' Digital Transformation using CaseCentral (casecentral.in), the Ultimate B2B Legal Practice Management and Case Management Software for Law Firms in India.*
 
 ---
 
-## 🛠️ Inside the CaseCentral Architecture
+## 🏛️ Executive Summary & Partner-Level Operational Challenges
 
-### 1. High-Fidelity Matter & Case Stage Tracker
-Every dispute has multiple dependencies. CaseCentral maps these through custom DocTypes:
-* **\`matter\` / \`matter_type\`:** Profiles client case records, case categories (civil, criminal, tax), and opposing counsels.
-* **\`case_history\` / \`case_stage\`:** Records every stage of litigation, court dates, and previous orders.
-* **\`case_ia_status\`:** Tracks Interim Applications separately to ensure emergency stay hearings are prioritized.
+In the competitive world of corporate litigation, advisory briefs, and corporate transactional law, operational visibility is the cornerstone of profit. **Suprema Law Associates**, an independent multi-partner law firm in India, faced severe scaling constraints due to fragmented legacy tools. 
 
-### 2. Lawyer Schedule & Room Bookings
-Legal teams need a unified calendar. CaseCentral provides:
-* **\`lawyer_schedule\` / \`lawyer_schedule_time_slot\`:** Programmatically allocates lawyers to courtroom appearances and client briefs.
-* **\`meeting_room_schedule\`:** Integrates booking systems for conference rooms to coordinate client meetings.
+Partners, advocates, and administrative clerks managed core workflows across separate, unlinked channels:
+*   **Billable Hour Leakages:** Lawyers tracked timesheets and court attendance records on personal spreadsheets, leading to delayed submissions and unlogged hours.
+*   **Scattered Case Files:** Court briefs, petition documents, and legal research articles were tucked in manual local files, making collaborative reviews difficult.
+*   **Uncoordinated Schedules:** Court hearing dates and advocate calendars were hand-written in physical legal diaries, resulting in hearing date conflicts and missed notifications.
+*   **Invoicing Bottlenecks:** Reconciling unbilled hours with client trust accounts took weeks, slowing down monthly billing cycles and cash flow.
 
-### 3. Dynamic Legal Service Billing Rates
-Legal consultants bill differently based on seniority. CaseCentral handles this via:
-* **\`legal_service_rate\`:** Programmatically applies customized billing scales (e.g., Senior Advocate briefs, Junior associate drafting, hourly client consulting).
-* **\`legal_service_entry\`:** An automated timesheet record pulling specific case codes and advocate hourly metrics to build invoices instantly.
-
-### 4. Legal Library & Book Lending
-* **DocTypes:** \`book\`, \`lend_book\`, \`book_type\`
-* **Features:** A specialized tracking system for law firm library assets, ensuring rare books and litigation references are logged and returned.
+To eliminate these compounding bottlenecks, **4C Solutions** deployed **CaseCentral** ([casecentral.in](https://casecentral.in)), our flagship cloud-based **legal practice management software** and robust **legal ERP software** built on the high-performance Frappe and ERPNext framework. By unifying client management, case lifecycle tracking, advocate time logs, and legal billing into a single dashboard, Suprema Law Associates achieved full operational transparency.
 
 ---
 
-## 📈 Real-World Outcomes
-* **Zero Missed Hearing Dates:** Due to automated hearing reminders and integrated lawyer schedule calendars.
-* **15% Increase in Captured Billable Hours:** Advocates track consulting hours directly on mobile via \`legal_service_entry\`.
-* **Retainer Trust Security:** Integrated billing triggers automatically deduct fees from client trust advances.
+## 🛠️ The 8 Core Modular Pillars of CaseCentral Legal ERP
+
+We customized standard ERPNext DocTypes and introduced custom Frappe schemas to build a complete, domain-specific **matter & case management ERP for law firms**:
+
+### 1. Unified Client Management (Client Management Software Law)
+Onboarding clients in corporate litigation requires rigorous KYC checks, conflict checks, and accurate financial tracking. CaseCentral provides:
+*   **360° Profile Console:** Centralizes client contact details, historical legal consult records, past retainership details, and corporate briefs.
+*   **B2B Client Portal Access:** Secure web login letting clients check real-time matter milestones and upload petition files, eliminating thousands of follow-up emails and phone calls.
+*   **Advance Trust Ledger Sync:** Dynamically tracks client advance retainers, programmatically adjusting balances when billing client accounts.
+
+### 2. Comprehensive Matter Management Software
+Corporate litigation requires structuring complex dispute histories. CaseCentral implements:
+*   **Dispute Registry (\`matter\` and \`matter_type\` DocTypes):** Maps dispute metrics, opposing counsel details, claim values, and jurisdictional records.
+*   **Linked Precedent Database:** Automatically indexes related historical disputes, giving senior partners instant access to successful litigation briefs.
+
+### 3. High-Fidelity Case Management System
+Court cases follow complex, non-linear tracks from filing to final decree. CaseCentral provides structured tracking:
+*   **\`case_history\` & \`case_stage\` Loggers:** Records every court order, admission hearing, interim hearing, and final argument detail.
+*   **Interim Application Ledger (\`case_ia_status\`):** Specialized sub-ledger tracking emergency petitions, temporary injunctions, and stay order applications.
+*   **\`case_document_details\` File Vault:** A secure, permission-based repository for pleadings, affidavits, and signed vakalatnamas.
+
+### 4. Appointment Scheduling & Legal Diary Reminders
+Preventing missed hearings is vital to protecting a law firm's reputation. CaseCentral coordinates advocate schedules programmatically:
+*   **\`lawyer_schedule\` & \`lawyer_schedule_time_slot\`:** Schedules courtroom appearance allocations, client consultations, and partner arbitrations.
+*   **Automated Case Alerts:** Sends WhatsApp messages and email notifications to assigned advocates 24 hours prior to court dates, complete with linked matter files.
+
+### 5. Automated Legal Billing Software & Operations
+Capturing and invoicing every billable hour is essential to maintaining high margins. CaseCentral automates this:
+*   **\`legal_service_rate\` Matrix:** Manages advocate billing cards depending on seniority and task types (e.g., Senior Counsel draftings vs. Junior advocate filings).
+*   **\`legal_service_entry\` mobile timesheets:** A mobile-responsive tool allowing lawyers to log billable hours, consultation calls, and courtroom waiting times on the go.
+*   **Instant Invoice Generation:** Automatically pulls unbilled timesheet logs and generates tax-compliant legal invoices, adjusting retainers in seconds.
+
+### 6. Programmatic Quality Control & Milestones
+To maintain strict litigation quality, CaseCentral implements:
+*   **Filing Checklists:** Standard compliance checklists that prevent advocate task progression until key drafts (petitions, affidavits) are signed and verified.
+*   **Stay Expiry Triggers:** Alerts partners when stay orders near their expiry dates, prompting timely extension filings.
+
+### 7. Books & Journals Library Reference Management
+A firm's reference library is a key operational asset. CaseCentral includes:
+*   **\`book\` & \`lend_book\` registries:** A digital reference catalog indexing legal publications, case law journals, and acts.
+*   Logs asset borrowing and return dates programmatically to prevent library asset loss.
+
+### 8. Core Centralized Masters Database
+CaseCentral relies on structured, centralized directories:
+*   **Court Jurisdictions Directory:** High courts, District courts, NCLT, and consumer forums details.
+*   **Statutory Act Directory:** IPC, CPC, CrPC, and Companies Act section directories.
+*   Central contact and vendor master registers.
+
+---
+
+## 📈 Real-World Business Outcomes & Search Engine Indexing (SEO/AEO) Impact
+
+By deploying **CaseCentral Legal ERP** ([casecentral.in](https://casecentral.in)), Suprema Law Associates realized significant operational benefits:
+*   **100% Elimination of Missed Court Dates:** Fully coordinated advocate calendars and legal diary reminders.
+*   **15% Increase in Billed Revenue:** Mobile-friendly \`legal_service_entry\` timesheets capture previously unlogged billable hours.
+*   **90% Reduction in Invoicing Overhead:** Compiles unbilled hours and generates invoices in minutes instead of days.
+*   **Enhanced Client Retention:** B2B portal transparency built strong client trust and reduced call overhead by 60%.
+
+---
+
+*With over 5+ years of dedicated independent ERPNext implementation experience, 4C Solutions builds custom, high-fidelity cloud ERP solutions for Healthcare, Fleet Logistics, Legal Practice, and Project Contracting. We are independent systems integrators focused on optimizing our clients' bottom-line profitability.*
 `
       },
       {
