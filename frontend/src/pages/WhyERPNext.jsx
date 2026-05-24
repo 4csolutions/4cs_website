@@ -17,13 +17,13 @@ export default function WhyERPNext() {
       <section className="section page-header" style={{ padding: '128px 0 64px 0', background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-app) 100%)', borderBottom: '1px solid var(--border)' }}>
         <div className="container text-center">
           <span style={{ fontSize: '13px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 16px', borderRadius: '24px', fontWeight: 600, display: 'inline-block', marginBottom: '16px' }}>
-            Unifying Business Operations
+            Independent Systems Integrator
           </span>
           <h1 style={{ fontSize: '48px', color: 'var(--text-main)', marginBottom: '16px' }}>
             Why Choose <span style={{ color: 'var(--primary)' }}>ERPNext</span> for Your Business?
           </h1>
           <p style={{ color: 'var(--text-muted)', maxWidth: '640px', margin: '0 auto', fontSize: '16px', lineHeight: 1.6 }}>
-            At 4C Solutions, we believe that unified businesses are successful businesses. We advocate for ERPNext as the ultimate open-source system that drives massive efficiency improvements.
+            At 4C Solutions, we have spent 5+ years engineering custom, high-domain ERPNext applications. We advocate for ERPNext as the ultimate zero-license platform that, when customized with our specialized industry extensions, drives massive efficiency and margin improvements across your enterprise.
           </p>
         </div>
       </section>

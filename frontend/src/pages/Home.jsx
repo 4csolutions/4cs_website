@@ -73,13 +73,13 @@ export default function Home() {
         <div className="container grid grid-2 align-center">
           <div className="text-left anim-slide-left">
             <span style={{ fontSize: '14px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 16px', borderRadius: '24px', fontWeight: 600, display: 'inline-block', marginBottom: '16px' }}>
-              ERPNext Solutions Provider
+              Independent ERPNext Experts | 5+ Years Experience
             </span>
             <h1 style={{ fontSize: '56px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '24px', lineHeight: 1.15 }}>
-              Transform Your Business With <span style={{ color: 'var(--primary)' }}>ERPNext</span>
+              Transform Operations With Custom <span style={{ color: 'var(--primary)' }}>ERPNext</span>
             </h1>
             <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '520px', lineHeight: 1.6 }}>
-              Streamline operations, optimize production resources, and automate real-time accounting using the world's best open-source ERP system customized by 4C Solutions.
+              We are a premium independent systems integrator specializing in high-domain custom modules. We automate and streamline your operations in Healthcare, Logistics, Legal, and contracting with zero software license fees.
             </p>
             <div className="flex gap-4 wrap">
               <Link to="/whyerpnext" className="btn btn-primary">

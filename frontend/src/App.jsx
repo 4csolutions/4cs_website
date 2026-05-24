@@ -65,14 +65,10 @@ function ScrollToTop() {
           <div className="container flex align-center justify-between" style={{ height: '100%' }}>
             
             {/* Logo space */}
-            <Link to="/" className="flex align-center gap-1" style={{ textDecoration: 'none' }}>
-              <span style={{ fontWeight: 800, fontSize: '24px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)', display: 'flex', alignItems: 'center', gap: '2px' }}>
-                <span style={{ color: 'var(--primary)', fontWeight: 900 }}>4C</span>
-                <span style={{ display: 'flex', alignItems: 'center' }}>
-                  Soluti
-                  <img src="/4c-logo.png" alt="O" style={{ height: '24px', width: 'auto', margin: '0 1px', display: 'inline-block', verticalAlign: 'middle' }} />
-                  ns
-                </span>
+            <Link to="/" className="flex align-center gap-2" style={{ textDecoration: 'none' }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white', fontSize: '18px' }}>4C</div>
+              <span style={{ fontWeight: 800, fontSize: '24px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
+                Solutions
               </span>
             </Link>
 
@@ -196,19 +192,18 @@ function ScrollToTop() {
               {/* Col 1: Branding and Core Description */}
               <div className="flex flex-column gap-3" style={{ textAlign: 'left' }}>
                 <div className="flex align-center gap-2" style={{ fontWeight: 800, fontSize: '22px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
-                  <span style={{ color: 'var(--primary)', fontWeight: 900 }}>4C</span>
-                  <span style={{ display: 'flex', alignItems: 'center' }}>
-                    Soluti
-                    <img src="/4c-logo.png" alt="O" style={{ height: '20px', width: 'auto', margin: '0 1px', display: 'inline-block', verticalAlign: 'middle' }} />
-                    ns
-                  </span>
+                  <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white', fontSize: '15px' }}>4C</div>
+                  <span>Solutions</span>
                 </div>
                 <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>
-                  Empowering MSMEs and enterprise industries with premium ERPNext cloud implementations. We streamline your logistics, contracting, legal, and healthcare workflows.
+                  With 5+ years of dedicated, independent ERPNext & Frappe implementation experience, we build high-domain vertical extensions to modernize clinical hospital operations, fleet logistics, advocate case files, and project cost controls. We help you scale without restrictive software licensing fees.
                 </p>
-                <div className="flex align-center gap-2 mt-2">
-                  <span style={{ fontSize: '13px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 12px', borderRadius: '24px', fontWeight: 600 }}>
-                    Solution Provider
+                <div className="flex align-center gap-2 mt-2 wrap">
+                  <span style={{ fontSize: '12px', backgroundColor: 'rgba(231,29,54,0.1)', color: 'var(--error)', padding: '4px 10px', borderRadius: '12px', fontWeight: 600 }}>
+                    Independent Integrator
+                  </span>
+                  <span style={{ fontSize: '12px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '4px 10px', borderRadius: '12px', fontWeight: 600 }}>
+                    5+ Years Experience
                   </span>
                 </div>
               </div>
@@ -256,6 +251,9 @@ function ScrollToTop() {
             </div>
           </div>
         </footer>
+
+        {/* Floating WhatsApp chat widget */}
+        <WhatsAppChat />
 
       </div>
 
@@ -333,3 +331,119 @@ const mobileLinkStyle = {
   padding: '8px 0',
   color: 'var(--text-main)'
 };
+
+// Interactive, Tailwind-styled Floating WhatsApp Chat Widget
+function WhatsAppChat() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [customText, setCustomText] = useState("");
+  const [hasNewMessage, setHasNewMessage] = useState(true);
+  const phoneNumber = "918472254105";
+
+  const options = [
+    { label: "🏥 Healthcare HIS Suite", text: "Hi, I would like to discuss a demo of your ERPNext Healthcare and 4CS custom hospital extension." },
+    { label: "🚚 Fleet VMS & Logistics", text: "Hi, I'd like to learn more about VMS, Tyre Rotation tracking, and Driver Settlements." },
+    { label: "⚖️ CaseCentral Legal Suite", text: "Hi, I am interested in CaseCentral legal practice matter and timesheet tracking." },
+    { label: "🏗️ Project BOQ Controls", text: "Hi, I'd like to discuss project BOQ budgets and cash flow mapping on ERPNext." }
+  ];
+
+  const handleStartChat = (text) => {
+    const message = encodeURIComponent(text || customText || "Hi 4C Solutions, I'd like to learn more about your custom ERPNext implementations.");
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
+
+  const toggleOpen = () => {
+    setIsOpen(!isOpen);
+    if (hasNewMessage) setHasNewMessage(false);
+  };
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[10002] font-sans">
+      {/* Floating Action Button */}
+      <button 
+        onClick={toggleOpen}
+        className="w-14 h-14 rounded-full bg-emerald-500 hover:bg-emerald-600 shadow-xl flex items-center justify-center text-white relative transition-all duration-300 transform hover:scale-110 active:scale-95 focus:outline-none"
+        title="Chat on WhatsApp"
+        style={{ outline: 'none', border: 'none', cursor: 'pointer' }}
+      >
+        <svg viewBox="0 0 24 24" className="w-8 h-8 fill-current">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.46L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.965C16.528 1.977 14.053.953 11.425.951 5.993.951 1.566 5.323 1.562 10.751c-.001 1.693.45 3.344 1.305 4.793l-.99 3.614 3.71-.973c1.378.75 2.822 1.15 4.54 1.151h-.002zm10.136-7.37c-.302-.152-1.79-.885-2.068-.986-.278-.101-.482-.152-.684.152-.202.303-.78.986-.957 1.189-.176.202-.353.228-.655.076-.301-.152-1.272-.469-2.422-1.494-.894-.797-1.498-1.782-1.674-2.085-.176-.302-.019-.467.132-.617.136-.134.302-.354.453-.531.152-.177.202-.303.303-.506.101-.202.051-.38-.025-.531-.076-.152-.684-1.648-.938-2.257-.247-.597-.499-.516-.684-.526-.176-.01-.379-.012-.582-.012-.202 0-.531.076-.81.38-.278.303-1.062 1.037-1.062 2.529 0 1.493 1.087 2.935 1.239 3.137.152.202 2.14 3.264 5.182 4.577.724.312 1.29.499 1.732.639.728.231 1.39.198 1.916.12.585-.088 1.79-.733 2.043-1.442.253-.71.253-1.317.177-1.442-.077-.127-.278-.203-.58-.354z"/>
+        </svg>
+        {hasNewMessage && (
+          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border border-white flex items-center justify-center animate-pulse"></span>
+        )}
+      </button>
+
+      {/* Floating Chat Drawer Box */}
+      {isOpen && (
+        <div className="absolute bottom-16 right-0 w-80 max-w-[90vw] bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden transition-all duration-300 ease-out transform scale-100 origin-bottom-right">
+          {/* Header */}
+          <div className="bg-emerald-600 text-white p-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-white text-emerald-600 font-black flex items-center justify-center text-sm shadow-inner">
+                4CS
+              </div>
+              <div className="text-left">
+                <h4 className="font-bold text-sm leading-tight text-white m-0">4C Solutions Specialist</h4>
+                <span className="text-xs text-emerald-100 flex items-center gap-1" style={{ marginTop: '2px', display: 'flex', alignItems: 'center' }}>
+                  <span className="w-2 h-2 rounded-full bg-emerald-300 animate-pulse inline-block"></span>
+                  Active | 5+ Years ERPNext Experts
+                </span>
+              </div>
+            </div>
+            <button onClick={() => setIsOpen(false)} className="text-emerald-100 hover:text-white transition-colors duration-200 focus:outline-none" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+              <X size={18} />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="p-4 max-h-[360px] overflow-y-auto bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-200">
+            {/* System Info */}
+            <div className="bg-emerald-50 dark:bg-slate-900/50 border border-emerald-100 dark:border-slate-800 rounded-xl p-3 mb-3 text-xs text-slate-600 dark:text-slate-400 text-left leading-relaxed">
+              <strong>Premium Independent Integrator:</strong> We possess 5+ years of custom implementation expertise. We build customized workflows to help you scale without per-user licensing fees.
+            </div>
+
+            {/* Welcome Bubble */}
+            <div className="bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800 rounded-2xl p-3 mb-3 text-xs text-slate-800 dark:text-slate-200 text-left rounded-tl-none relative">
+              <div className="font-bold text-[10px] text-emerald-600 mb-1">Consulting Team</div>
+              Hi there! 👋 How can we help you automate your operational workflows today? Select a custom blueprint below or type a custom message.
+            </div>
+
+            {/* Quick Options */}
+            <div className="flex flex-col gap-2 mb-3">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500 text-left">Quick Blueprints</span>
+              {options.map((opt, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => handleStartChat(opt.text)}
+                  className="w-full text-left p-2 bg-white dark:bg-slate-900 hover:bg-emerald-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 hover:border-emerald-300 rounded-xl text-[11px] text-slate-700 dark:text-slate-300 font-medium transition-all duration-200 shadow-sm"
+                  style={{ cursor: 'pointer', textAlign: 'left' }}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Custom Input */}
+            <div className="mt-2">
+              <textarea
+                value={customText}
+                onChange={(e) => setCustomText(e.target.value)}
+                placeholder="Type your custom requirements here..."
+                rows="2"
+                className="w-full p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-[11px] text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-500 resize-none"
+              ></textarea>
+              <button
+                onClick={() => handleStartChat()}
+                className="w-full mt-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-1.5 text-xs transition-all duration-200 shadow-md"
+                style={{ cursor: 'pointer', border: 'none' }}
+              >
+                Send Message
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
