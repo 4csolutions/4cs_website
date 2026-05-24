@@ -38,7 +38,7 @@ services:
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
-      CONTACT_EMAIL: ${CONTACT_EMAIL:-syedmujeerhashmi@gmail.com}
+      CONTACT_EMAIL: ${CONTACT_EMAIL:-mujeerhashmi@4csolutions.in}
     volumes:
       - backend_uploads:/app/uploads
     expose:
