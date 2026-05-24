@@ -4,11 +4,10 @@ import { ShieldAlert, Cpu, HeartHandshake, BadgePercent, ArrowRight, Library, Ha
 
 export default function WhyERPNext() {
   const modules = [
-    { title: 'Core Accounting', icon: <DollarSign size={24} />, desc: 'Real-time billing, automated tax ledgers, multi-currency charts, and strict budget variance alarms.' },
-    { title: 'Supply Chain & Inventory', icon: <Cpu size={24} />, desc: 'FIFO batch tracking, multi-warehouse stock allocations, auto-reorder thresholds, and serial logs.' },
-    { title: 'Customer Relations (CRM)', icon: <HeartHandshake size={24} />, desc: 'Lead tracking pipeline, sales campaign conversions, quote generation, and auto-email alerts.' },
-    { title: 'HR & Dynamic Payroll', icon: <BadgePercent size={24} />, desc: 'Biometric attendances, leaf allocations, dynamic payroll ledgers, and timesheet payouts.' },
-    { title: 'Project Contracting', icon: <Library size={24} />, desc: 'Gantt tasks, budget tracking milestones, timesheet labor issues, and progress billing logs.' }
+    { title: 'Financial Accounting', icon: <DollarSign size={24} />, desc: 'Real-time bookkeeping, automated general ledger, tax accounts reconciliation, asset depreciation tracking, and multi-currency billing.' },
+    { title: 'Procurement & Sales', icon: <HeartHandshake size={24} />, desc: 'Automate sales orders, request for quotations (RFQs), supplier agreements, dynamic pricing rules, and seamless customer invoicing.' },
+    { title: 'Supply Chain & Inventory', icon: <Cpu size={24} />, desc: 'Multi-warehouse stock control, automated reorder thresholds, batch and serial tracking, FIFO valuations, and real-time shipping logs.' },
+    { title: 'HR & Payroll', icon: <BadgePercent size={24} />, desc: 'Manage complete employee lifecycle, biometric attendance integration, leave allocations, dynamic tax tables, and direct bank payroll ledger exports.' }
   ];
 
   return (
@@ -49,7 +48,7 @@ export default function WhyERPNext() {
             </div>
             
             <div className="flex flex-column gap-4 anim-slide-right">
-              {modules.slice(0, 3).map((mod, idx) => (
+              {modules.map((mod, idx) => (
                 <div key={idx} className="glass" style={{ display: 'flex', gap: '20px', padding: '24px', borderRadius: 'var(--radius-md)', textAlign: 'left' }}>
                   <div style={{ backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '12px', borderRadius: '8px', height: 'fit-content' }}>
                     {mod.icon}

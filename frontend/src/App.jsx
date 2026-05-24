@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Menu, X, Sun, Moon, LogOut, ShieldCheck, Mail, MapPin, Phone } from 'lucide-react';
 
 // Pages Import
@@ -45,8 +45,19 @@ export default function App() {
     window.location.href = '/';
   };
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
   return (
     <Router>
+      <ScrollToTop />
       <div className="app-wrapper flex flex-column" style={{ minHeight: '100vh' }}>
         
         {/* Sticky Dynamic Glass Navbar */}
