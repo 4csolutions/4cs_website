@@ -33,12 +33,13 @@ const seedData = async () => {
 
     // 1. Seed Admin User
     console.log('Seeding default Admin user...');
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
     await User.create({
       username: 'admin',
       password: hashedPassword
     });
-    console.log('Default Admin user created successfully (username: admin, password: admin123)');
+    console.log(`Default Admin user created successfully (username: admin, password: ${adminPassword})`);
 
     // 2. Seed Sectors based directly on custom codebase analysis and official CaseCentral specs
     console.log('Seeding initial sectors with domain feature lists...');
