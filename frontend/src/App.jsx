@@ -224,10 +224,15 @@ function ScrollToTop() {
               <div className="flex flex-column gap-3" style={{ textAlign: 'left' }}>
                 <h4 style={{ fontSize: '16px', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contact Office</h4>
                 <div className="flex flex-column gap-3" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-                  <div className="flex align-center gap-2">
-                    <MapPin size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
+                  <a 
+                    href="https://www.google.com/maps/place/4C+Solutions+-+ERPNext+Services+and+Consultation,+Software+Development/@17.3350179,76.8613332,17z/data=!4m6!3m5!1s0x3bc8c7319ded473b:0x610e34759ec89438!8m2!3d17.3350179!4d76.8613332!16s%2Fg%2F11fr494j74!5m1!1e1?entry=ttu" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="footer-hover-link flex align-start gap-2"
+                  >
+                    <MapPin size={18} style={{ color: 'var(--primary)', flexShrink: 0, marginTop: '2px' }} />
                     <span>MIG-22, 1st Phase, Adarsh Nagar, Kalaburagi - 585105, Karnataka, India</span>
-                  </div>
+                  </a>
                   <div className="flex align-center gap-2">
                     <Mail size={18} style={{ color: 'var(--primary)', flexShrink: 0 }} />
                     <a href="mailto:info@4csolutions.in" className="footer-hover-link">info@4csolutions.in</a>

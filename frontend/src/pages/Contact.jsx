@@ -85,13 +85,19 @@ export default function Contact() {
 
             <div className="flex flex-column gap-4">
               
-              <div className="flex align-center gap-4" style={infoRowStyle}>
+              <a 
+                href="https://www.google.com/maps/place/4C+Solutions+-+ERPNext+Services+and+Consultation,+Software+Development/@17.3350179,76.8613332,17z/data=!4m6!3m5!1s0x3bc8c7319ded473b:0x610e34759ec89438!8m2!3d17.3350179!4d76.8613332!16s%2Fg%2F11fr494j74!5m1!1e1?entry=ttu"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex align-center gap-4 transition-all duration-300 hover:scale-[1.02]"
+                style={{ ...infoRowStyle, textDecoration: 'none', cursor: 'pointer' }}
+              >
                 <div style={iconBoxStyle}><MapPin size={22} /></div>
                 <div>
                   <h4 style={{ fontSize: '15px', color: 'var(--text-main)', fontWeight: 600 }}>Our Office</h4>
                   <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>MIG-22, 1st Phase, Adarsh Nagar, Kalaburagi - 585105, Karnataka</span>
                 </div>
-              </div>
+              </a>
 
               <div className="flex align-center gap-4" style={infoRowStyle}>
                 <div style={iconBoxStyle}><Mail size={22} /></div>
@@ -176,6 +182,49 @@ export default function Contact() {
             </form>
           </div>
 
+        </div>
+      </section>
+
+      {/* 3. INTERACTIVE GOOGLE MAPS EMBED */}
+      <section className="section map-section animate-fade-in" style={{ padding: '0 0 80px 0' }}>
+        <div className="container" style={{ maxWidth: '1200px' }}>
+          <div style={{ textAlign: 'left', marginBottom: '24px' }}>
+            <h3 style={{ fontSize: '24px', color: 'var(--text-main)', marginBottom: '8px' }}>Locate Our Office</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '15px' }}>Visit us for in-person consultations, interactive product demos, and strategic system discussions.</p>
+          </div>
+          
+          <div style={{ 
+            borderRadius: 'var(--radius-lg)', 
+            overflow: 'hidden', 
+            border: '1px solid var(--border)', 
+            boxShadow: 'var(--shadow-md)',
+            height: '450px',
+            width: '100%',
+            position: 'relative',
+            backgroundColor: 'var(--bg-card)'
+          }}>
+            <iframe 
+              src="https://maps.google.com/maps?q=4C%20Solutions%20-%20ERPNext%20Services%20and%20Consultation,%20Kalaburagi&t=&z=16&ie=UTF8&iwloc=&output=embed"
+              width="100%" 
+              height="100%" 
+              style={{ border: 0 }} 
+              allowFullScreen="" 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade"
+              title="4C Solutions Office Location Map"
+            ></iframe>
+          </div>
+          <div className="flex justify-center mt-6">
+            <a 
+              href="https://www.google.com/maps/place/4C+Solutions+-+ERPNext+Services+and+Consultation,+Software+Development/@17.3350179,76.8613332,17z/data=!4m6!3m5!1s0x3bc8c7319ded473b:0x610e34759ec89438!8m2!3d17.3350179!4d76.8613332!16s%2Fg%2F11fr494j74!5m1!1e1?entry=ttu" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="btn btn-secondary flex align-center gap-2"
+              style={{ width: 'fit-content', padding: '12px 28px', fontSize: '14px', textDecoration: 'none', fontWeight: 600 }}
+            >
+              <MapPin size={16} /> Navigate in Google Maps
+            </a>
+          </div>
         </div>
       </section>
 
