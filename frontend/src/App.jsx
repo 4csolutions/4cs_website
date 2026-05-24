@@ -197,7 +197,7 @@ export default function App() {
                 </p>
                 <div className="flex align-center gap-2 mt-2">
                   <span style={{ fontSize: '13px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 12px', borderRadius: '24px', fontWeight: 600 }}>
-                    Official Solution Provider
+                    Solution Provider
                   </span>
                 </div>
               </div>

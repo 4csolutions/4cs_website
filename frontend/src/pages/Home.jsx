@@ -73,7 +73,7 @@ export default function Home() {
         <div className="container grid grid-2 align-center">
           <div className="text-left anim-slide-left">
             <span style={{ fontSize: '14px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '6px 16px', borderRadius: '24px', fontWeight: 600, display: 'inline-block', marginBottom: '16px' }}>
-              Authorized ERPNext Solutions Provider
+              ERPNext Solutions Provider
             </span>
             <h1 style={{ fontSize: '56px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '24px', lineHeight: 1.15 }}>
               Transform Your Business With <span style={{ color: 'var(--primary)' }}>ERPNext</span>
