@@ -113,7 +113,7 @@ const seedData = async () => {
     const seededSectors = await Sector.insertMany(initialSectors);
     console.log('Sectors seeded successfully.');
 
-    // 3. Seed Testimonials (linked to seeded sectors)
+    // 3. Seed Testimonials (linked to seeded sectors and real customers)
     console.log('Seeding client testimonials...');
     const healthcareSector = seededSectors.find(s => s.slug === 'healthcare');
     const logisticsSector = seededSectors.find(s => s.slug === 'logistics');
@@ -123,7 +123,7 @@ const seedData = async () => {
       {
         clientName: 'Dr. Abdul Qadir',
         clientPosition: 'Medical Director',
-        companyName: 'Adarsh Multispecialty Clinic',
+        companyName: 'Manur Multi-Speciality Hospital',
         feedback: 'The Patient DOB auto-resolution and Observation sync built by 4C Solutions solved our patient waiting times completely. We now have patient records, laboratory test parameters, and pharmacy checkouts communicating on a single, secure screen.',
         avatarPath: '',
         sector: healthcareSector ? healthcareSector._id : null
@@ -131,7 +131,7 @@ const seedData = async () => {
       {
         clientName: 'Rahul Deshmukh',
         clientPosition: 'Operations Head',
-        companyName: 'Vikas Shipping & Logistics',
+        companyName: 'EFF Logistics Pvt Ltd',
         feedback: 'Tyre costs were our second largest expense. The Tyre Rotation log and Driver Settlement systems in 4C Solutions\' VMS app gave us full visibility, reducing fuel leakages and tyre replacements by 18% in the first year.',
         avatarPath: '',
         sector: logisticsSector ? logisticsSector._id : null
@@ -139,7 +139,7 @@ const seedData = async () => {
       {
         clientName: 'Mohammad Yusuf',
         clientPosition: 'Managing Director',
-        companyName: 'STC Infrastructure Ltd',
+        companyName: 'SAMA Energy',
         feedback: 'Enforcing strict BOQ cost center validations on ERPNext saved us from significant subcontractor billing overruns. 4C Solutions\' project controls and cash flow mapping are brilliant.',
         avatarPath: '',
         sector: contractingSector ? contractingSector._id : null
@@ -149,17 +149,27 @@ const seedData = async () => {
     await Testimonial.insertMany(testimonialsToSeed);
     console.log('Testimonials seeded successfully.');
 
-    // 4. Seed Client Logos
+    // 4. Seed Client Logos (Real Customer Roster)
     console.log('Seeding client logos...');
     const logos = [
-      { clientName: 'SLA Law Chambers', logoPath: '/assets/logos/client_sla.png', websiteUrl: '#', sector: seededSectors.find(s => s.slug === 'legal')?._id },
-      { clientName: 'PVI Hospitals', logoPath: '/assets/logos/client_pvi.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'STC Infra Projects', logoPath: '/assets/logos/client_stc.png', websiteUrl: '#', sector: contractingSector?._id },
-      { clientName: 'Methaq Logistics', logoPath: '/assets/logos/client_methaq.png', websiteUrl: '#', sector: logisticsSector?._id },
-      { clientName: 'Spollex Tech', logoPath: '/assets/logos/client_spollex.png', websiteUrl: '#', sector: logisticsSector?._id },
-      { clientName: 'Adarsh Clinics', logoPath: '/assets/logos/client_adarsh.png', websiteUrl: '#', sector: healthcareSector?._id },
-      { clientName: 'Kalaburagi Logistics', logoPath: '/assets/logos/client_klogistics.png', websiteUrl: '#', sector: logisticsSector?._id },
-      { clientName: 'Karnatak Contracting', logoPath: '/assets/logos/client_kcontracting.png', websiteUrl: '#', sector: contractingSector?._id }
+      // Healthcare
+      { clientName: 'NK Hospital', logoPath: '/uploads/nk_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Manur Multi-Speciality Hospital', logoPath: '/uploads/manur_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Bahmani Critical Care', logoPath: '/uploads/bahmani_care.png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Asian Hospital', logoPath: '/uploads/asian_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
+      { clientName: 'Jeevika Multi-Speciality Hospital', logoPath: '/uploads/jeevika_hospital.png', websiteUrl: '#', sector: healthcareSector?._id },
+      
+      // Legal
+      { clientName: 'Suprema Law Associates', logoPath: '/uploads/suprema_law.png', websiteUrl: '#', sector: seededSectors.find(s => s.slug === 'legal')?._id },
+      
+      // Logistics
+      { clientName: 'EFF Logistics Pvt Ltd', logoPath: '/uploads/eff_logistics.png', websiteUrl: '#', sector: logisticsSector?._id },
+      
+      // Project Contracting
+      { clientName: 'SAMA Energy', logoPath: '/uploads/sama_energy.png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Petrovision International LLC', logoPath: '/uploads/petrovision.png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Nexalis International Oil & Gas', logoPath: '/uploads/nexalis.png', websiteUrl: '#', sector: contractingSector?._id },
+      { clientName: 'Brixpan Infra Pvt. Ltd.', logoPath: '/uploads/brixpan.png', websiteUrl: '#', sector: contractingSector?._id }
     ];
     await ClientLogo.insertMany(logos);
     console.log('Client logos seeded successfully.');

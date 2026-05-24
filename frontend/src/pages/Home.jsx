@@ -76,10 +76,10 @@ export default function Home() {
               Independent ERPNext Experts | 5+ Years Experience
             </span>
             <h1 style={{ fontSize: '56px', fontWeight: 800, color: 'var(--text-main)', marginBottom: '24px', lineHeight: 1.15 }}>
-              Transform Operations With Custom <span style={{ color: 'var(--primary)' }}>ERPNext</span>
+              Scale Without Limits: Zero-License <span style={{ color: 'var(--primary)' }}>ERPNext</span> Solutions
             </h1>
             <p style={{ fontSize: '18px', color: 'var(--text-muted)', marginBottom: '32px', maxWidth: '520px', lineHeight: 1.6 }}>
-              We are a premium independent systems integrator specializing in high-domain custom modules. We automate and streamline your operations in Healthcare, Logistics, Legal, and contracting with zero software license fees.
+              We are a premium independent systems integrator specializing in high-domain custom modules. We automate operations in Healthcare, Logistics, Legal, and Project Contracting with zero software user license fees.
             </p>
             <div className="flex gap-4 wrap">
               <Link to="/whyerpnext" className="btn btn-primary">
@@ -140,6 +140,30 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* 2.5 TRUSTED STATISTICS GRID */}
+      <section className="section stats-section" style={{ backgroundColor: 'var(--bg-card)', borderBottom: '1px solid var(--border)', padding: '56px 0', borderTop: '1px solid var(--border)' }}>
+        <div className="container">
+          <div className="grid grid-4 text-center" style={{ gap: '24px' }}>
+            <div className="flex flex-column align-center">
+              <span style={{ fontSize: '42px', fontWeight: 800, color: 'var(--primary)', display: 'block', lineHeight: 1.1 }}>5+ Years</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>ERPNext Engineering</span>
+            </div>
+            <div className="flex flex-column align-center">
+              <span style={{ fontSize: '42px', fontWeight: 800, color: 'var(--primary)', display: 'block', lineHeight: 1.1 }}>15+</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Enterprise Shifts</span>
+            </div>
+            <div className="flex flex-column align-center">
+              <span style={{ fontSize: '42px', fontWeight: 800, color: 'var(--primary)', display: 'block', lineHeight: 1.1 }}>40%</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Average Efficiency Gain</span>
+            </div>
+            <div className="flex flex-column align-center">
+              <span style={{ fontSize: '42px', fontWeight: 800, color: 'var(--primary)', display: 'block', lineHeight: 1.1 }}>₹0</span>
+              <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, marginTop: '8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>User License Overhead</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* 3. INTERACTIVE METHODOLOGY FLOW */}
       <section className="section methodology-section" style={{ borderBottom: '1px solid var(--border)' }}>
