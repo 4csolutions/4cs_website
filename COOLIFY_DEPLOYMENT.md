@@ -36,7 +36,7 @@ Our deployment leverages a highly secure, high-performance Docker Compose stack:
    SMTP_PORT=587
    SMTP_USER=your_email@gmail.com
    SMTP_PASS=your_app_password
-   CONTACT_EMAIL=syedmujeerhashmi@gmail.com
+   CONTACT_EMAIL=mujeerhashmi@4csolutions.in
    ```
 5. Under **Domains**, assign:
    - `frontend` service → `https://4csolutions.in` (port `80`)
