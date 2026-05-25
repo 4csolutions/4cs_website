@@ -181,19 +181,37 @@ export default function IndustryDetail() {
 
           <div className="grid grid-3 gap-6">
             {sector.features && sector.features.length > 0 ? (
-              sector.features.map((feature, index) => (
-                <div key={index} className="card-item flex align-start gap-4 text-left" style={{ padding: '32px' }}>
-                  <div style={{ backgroundColor: 'var(--primary-glow)', padding: '10px', borderRadius: '50%', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CheckCircle size={20} style={{ color: 'var(--primary)' }} />
+              sector.features.map((feature, index) => {
+                let title = feature;
+                let description = "Fully custom fields, operational security permissions, and native dashboard reporting integrated out-of-the-box.";
+                if (feature.includes(':')) {
+                  const colonIndex = feature.indexOf(':');
+                  title = feature.substring(0, colonIndex).trim();
+                  description = feature.substring(colonIndex + 1).trim();
+                }
+                return (
+                  <div key={index} className="card-item flex align-start gap-4 text-left" style={{ padding: '32px' }}>
+                    <div style={{ 
+                      backgroundColor: 'var(--primary-glow)', 
+                      borderRadius: '50%', 
+                      flexShrink: 0, 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center',
+                      width: '40px',
+                      height: '40px'
+                    }}>
+                      <CheckCircle size={20} style={{ color: 'var(--primary)' }} />
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '18px', color: 'var(--text-main)', marginBottom: '8px', marginTop: '2px', fontWeight: 600 }}>{title}</h3>
+                      <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>
+                        {description}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 style={{ fontSize: '18px', color: 'var(--text-main)', marginBottom: '8px', marginTop: '2px', fontWeight: 600 }}>{feature}</h3>
-                    <p style={{ fontSize: '13px', color: 'var(--text-muted)', lineHeight: 1.5, margin: 0 }}>
-                      Fully custom fields, operational security permissions, and native dashboard reporting integrated out-of-the-box.
-                    </p>
-                  </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="col-span-3 text-center" style={{ padding: '24px', color: 'var(--text-muted)' }}>
                 No specific ERPNext workflow features declared for this sector.
