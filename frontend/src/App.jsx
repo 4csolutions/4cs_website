@@ -65,10 +65,22 @@ function ScrollToTop() {
           <div className="container flex align-center justify-between" style={{ height: '100%' }}>
             
             {/* Logo space */}
-            <Link to="/" className="flex align-center gap-2" style={{ textDecoration: 'none' }}>
-              <img src="/logo.png" alt="4C Solutions Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
-              <span style={{ fontWeight: 800, fontSize: '24px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
-                Solutions
+            <Link to="/" className="flex align-center" style={{ textDecoration: 'none' }}>
+              <span style={{ fontWeight: 800, fontSize: '24px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
+                4C S
+                <img 
+                  src="/logo.png" 
+                  alt="o" 
+                  style={{ 
+                    height: '20px', 
+                    width: '20px', 
+                    objectFit: 'contain', 
+                    margin: '0 1px', 
+                    display: 'inline-block',
+                    verticalAlign: 'middle'
+                  }} 
+                />
+                lutions
               </span>
             </Link>
 
@@ -191,9 +203,21 @@ function ScrollToTop() {
               
               {/* Col 1: Branding and Core Description */}
               <div className="flex flex-column gap-3" style={{ textAlign: 'left' }}>
-                <div className="flex align-center gap-2" style={{ fontWeight: 800, fontSize: '22px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
-                  <img src="/logo.png" alt="4C Solutions Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
-                  <span>Solutions</span>
+                <div style={{ fontWeight: 800, fontSize: '22px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)', display: 'flex', alignItems: 'center' }}>
+                  4C S
+                  <img 
+                    src="/logo.png" 
+                    alt="o" 
+                    style={{ 
+                      height: '18px', 
+                      width: '18px', 
+                      objectFit: 'contain', 
+                      margin: '0 1px', 
+                      display: 'inline-block',
+                      verticalAlign: 'middle'
+                    }} 
+                  />
+                  lutions
                 </div>
                 <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>
                   With 5+ years of dedicated, independent ERPNext & Frappe implementation experience, we build high-domain vertical extensions to modernize clinical hospital operations, fleet logistics, advocate case files, and project cost controls. We help you scale without restrictive software licensing fees.
