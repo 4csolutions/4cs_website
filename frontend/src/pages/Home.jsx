@@ -131,13 +131,18 @@ export default function Home() {
           <div className="ticker-wrapper">
             {/* Double the list to make ticker infinite */}
             {[...logos, ...logos].map((logo, index) => (
-              <div className="ticker-item" key={index}>
+              <div className="ticker-item" key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
                 {logo.logoData ? (
-                  <img
-                    src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
-                    alt={logo.clientName}
-                    style={{ height: '36px', maxWidth: '120px', objectFit: 'contain', filter: 'grayscale(0.3)', opacity: 0.85 }}
-                  />
+                  <>
+                    <img
+                      src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
+                      alt={logo.clientName}
+                      style={{ height: '32px', maxWidth: '120px', objectFit: 'contain', filter: 'grayscale(0.3)', opacity: 0.85 }}
+                    />
+                    <span style={{ fontSize: '12px', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.03em' }}>
+                      {logo.clientName}
+                    </span>
+                  </>
                 ) : (
                   <span style={{ fontWeight: 700, fontSize: '18px', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>
                     {logo.clientName}

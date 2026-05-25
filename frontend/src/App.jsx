@@ -66,7 +66,7 @@ function ScrollToTop() {
             
             {/* Logo space */}
             <Link to="/" className="flex align-center gap-2" style={{ textDecoration: 'none' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white', fontSize: '18px' }}>4C</div>
+              <img src="/logo.png" alt="4C Solutions Logo" style={{ width: '32px', height: '32px', objectFit: 'contain' }} />
               <span style={{ fontWeight: 800, fontSize: '24px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
                 Solutions
               </span>
@@ -192,7 +192,7 @@ function ScrollToTop() {
               {/* Col 1: Branding and Core Description */}
               <div className="flex flex-column gap-3" style={{ textAlign: 'left' }}>
                 <div className="flex align-center gap-2" style={{ fontWeight: 800, fontSize: '22px', fontFamily: 'var(--font-family-title)', color: 'var(--text-main)' }}>
-                  <div style={{ width: '28px', height: '28px', borderRadius: '6px', backgroundColor: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: '900', color: 'white', fontSize: '15px' }}>4C</div>
+                  <img src="/logo.png" alt="4C Solutions Logo" style={{ width: '28px', height: '28px', objectFit: 'contain' }} />
                   <span>Solutions</span>
                 </div>
                 <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: 1.6 }}>

@@ -282,11 +282,12 @@ export default function IndustryDetail() {
                   key={logo._id}
                   target={logo.websiteUrl && logo.websiteUrl !== '#' ? '_blank' : '_self'}
                   rel="noopener noreferrer"
-                  className="glass flex align-center justify-center"
+                  className="glass flex flex-column align-center justify-center"
                   style={{
                     padding: '16px 28px',
                     borderRadius: '12px',
-                    minWidth: logo.logoData ? '120px' : '160px',
+                    gap: '8px',
+                    minWidth: '160px',
                     textDecoration: 'none',
                     border: '1px solid var(--border)',
                     boxShadow: 'var(--shadow-sm)',
@@ -302,12 +303,17 @@ export default function IndustryDetail() {
                   }}
                 >
                   {logo.logoData ? (
-                    <img
-                      src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
-                      alt={logo.clientName}
-                      title={logo.clientName}
-                      style={{ maxHeight: '48px', maxWidth: '140px', objectFit: 'contain' }}
-                    />
+                    <>
+                      <img
+                        src={`data:${logo.logoMimeType || 'image/png'};base64,${logo.logoData}`}
+                        alt={logo.clientName}
+                        title={logo.clientName}
+                        style={{ maxHeight: '40px', maxWidth: '140px', objectFit: 'contain' }}
+                      />
+                      <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                        {logo.clientName}
+                      </span>
+                    </>
                   ) : (
                     <span style={{ fontWeight: 700, color: 'var(--text-main)', fontSize: '16px', letterSpacing: '0.05em' }}>
                       {logo.clientName}
