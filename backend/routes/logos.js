@@ -4,10 +4,13 @@ import { authenticateAdmin } from './auth.js';
 
 const router = express.Router();
 
-// GET all logos (returns base64 data URI for rendering)
+// GET all logos (optionally filtered by ?sector=<id>)
 router.get('/', async (req, res) => {
   try {
-    const logos = await ClientLogo.find().sort({ createdAt: -1 });
+    const filter = req.query.sector ? { sector: req.query.sector } : {};
+    const logos = await ClientLogo.find(filter)
+      .populate('sector', 'name slug')
+      .sort({ createdAt: -1 });
     res.json(logos);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -17,7 +20,7 @@ router.get('/', async (req, res) => {
 // POST new client logo with base64 image (Admin Secure)
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
-    const { clientName, logoData, logoMimeType, websiteUrl } = req.body;
+    const { clientName, logoData, logoMimeType, websiteUrl, sectorId } = req.body;
     if (!clientName || !logoData) {
       return res.status(400).json({ error: 'Client name and logo image are required' });
     }
@@ -26,10 +29,13 @@ router.post('/', authenticateAdmin, async (req, res) => {
       clientName,
       logoData,
       logoMimeType: logoMimeType || 'image/png',
-      websiteUrl: websiteUrl || ''
+      websiteUrl: websiteUrl || '',
+      sector: sectorId || null
     });
 
-    res.status(201).json(newLogo);
+    // Return populated sector info
+    const populated = await newLogo.populate('sector', 'name slug');
+    res.status(201).json(populated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -38,7 +44,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
 // PUT update client logo (Admin Secure)
 router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { clientName, logoData, logoMimeType, websiteUrl } = req.body;
+    const { clientName, logoData, logoMimeType, websiteUrl, sectorId } = req.body;
     const logo = await ClientLogo.findById(req.params.id);
     if (!logo) {
       return res.status(404).json({ error: 'Client logo not found' });
@@ -48,9 +54,12 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
     if (logoData) logo.logoData = logoData;
     if (logoMimeType) logo.logoMimeType = logoMimeType;
     if (websiteUrl !== undefined) logo.websiteUrl = websiteUrl;
+    // Allow clearing sector by passing empty string
+    logo.sector = sectorId || null;
 
     const updatedLogo = await logo.save();
-    res.json(updatedLogo);
+    const populated = await updatedLogo.populate('sector', 'name slug');
+    res.json(populated);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

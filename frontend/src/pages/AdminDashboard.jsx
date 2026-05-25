@@ -23,7 +23,7 @@ export default function AdminDashboard({ token }) {
   // Form states
   const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', features: '' });
   const [testimonialForm, setTestimonialForm] = useState({ clientName: '', clientPosition: '', companyName: '', feedback: '', sectorId: '' });
-  const [logoForm, setLogoForm] = useState({ clientName: '', logoData: '', logoMimeType: 'image/png', websiteUrl: '', previewUrl: '' });
+  const [logoForm, setLogoForm] = useState({ clientName: '', logoData: '', logoMimeType: 'image/png', websiteUrl: '', sectorId: '', previewUrl: '' });
   const [blogForm, setBlogForm] = useState({ title: '', summary: '', content: '', author: 'S. M. Hashmi', sectorId: '', metaKeywords: '' });
 
   const fileInputRef = useRef(null);
@@ -147,6 +147,7 @@ export default function AdminDashboard({ token }) {
         logoData: item?.logoData ?? '',
         logoMimeType: item?.logoMimeType ?? 'image/png',
         websiteUrl: item?.websiteUrl ?? '',
+        sectorId: item?.sector?._id ?? '',
         previewUrl: preview
       });
     } else if (type === 'blog') {
@@ -181,7 +182,7 @@ export default function AdminDashboard({ token }) {
         setErrorMsg('Please select a logo image to upload.');
         return;
       }
-      body = { clientName: logoForm.clientName, logoData: logoForm.logoData, logoMimeType: logoForm.logoMimeType, websiteUrl: logoForm.websiteUrl };
+      body = { clientName: logoForm.clientName, logoData: logoForm.logoData, logoMimeType: logoForm.logoMimeType, websiteUrl: logoForm.websiteUrl, sectorId: logoForm.sectorId };
     } else if (modalType === 'blog') {
       endpoint = editItem ? `/api/blogs/${editItem._id}` : '/api/blogs';
       body = blogForm;
@@ -427,13 +428,24 @@ export default function AdminDashboard({ token }) {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '16px', marginTop: '16px' }}>
                     {logos.map(logo => (
                       <div key={logo._id} style={{ border: '1px solid var(--border)', borderRadius: '12px', padding: '16px', textAlign: 'center', backgroundColor: 'var(--bg-app)' }}>
-                        <img
-                          src={`data:${logo.logoMimeType};base64,${logo.logoData}`}
-                          alt={logo.clientName}
-                          style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain', marginBottom: '10px' }}
-                        />
+                        {logo.logoData ? (
+                          <img
+                            src={`data:${logo.logoMimeType};base64,${logo.logoData}`}
+                            alt={logo.clientName}
+                            style={{ maxHeight: '60px', maxWidth: '100%', objectFit: 'contain', marginBottom: '10px' }}
+                          />
+                        ) : (
+                          <div style={{ height: '60px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                            <span style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No image</span>
+                          </div>
+                        )}
                         <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-main)', marginBottom: '4px' }}>{logo.clientName}</div>
-                        {logo.websiteUrl && <div style={{ fontSize: '11px', color: 'var(--text-muted)', wordBreak: 'break-all' }}>{logo.websiteUrl}</div>}
+                        {logo.sector && (
+                          <div style={{ fontSize: '11px', backgroundColor: 'var(--primary-glow)', color: 'var(--primary)', padding: '2px 8px', borderRadius: '10px', display: 'inline-block', marginBottom: '4px' }}>
+                            {logo.sector.name}
+                          </div>
+                        )}
+                        {logo.websiteUrl && <div style={{ fontSize: '11px', color: 'var(--text-muted)', wordBreak: 'break-all', marginTop: '2px' }}>{logo.websiteUrl}</div>}
                         <div style={{ display: 'flex', gap: '8px', marginTop: '10px', justifyContent: 'center' }}>
                           <button onClick={() => launchModal('logo', logo)} className="btn btn-secondary" style={{ padding: '5px 10px' }}><Edit3 size={13} /></button>
                           <button onClick={() => handleDelete('logo', logo._id)} className="btn btn-danger" style={{ padding: '5px 10px' }}><Trash2 size={13} /></button>
@@ -620,9 +632,23 @@ export default function AdminDashboard({ token }) {
                     )}
                   </div>
 
-                  <div className="form-group">
-                    <label className="form-label">Client Website URL (Optional)</label>
-                    <input type="url" value={logoForm.websiteUrl} onChange={e => setLogoForm({ ...logoForm, websiteUrl: e.target.value })} className="form-control" placeholder="https://sla.in" />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                    <div className="form-group">
+                      <label className="form-label">Assigned Sector</label>
+                      <select
+                        value={logoForm.sectorId}
+                        onChange={e => setLogoForm({ ...logoForm, sectorId: e.target.value })}
+                        className="form-control"
+                        style={{ height: '53px' }}
+                      >
+                        <option value="">All Sectors / General</option>
+                        {sectors.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                      </select>
+                    </div>
+                    <div className="form-group">
+                      <label className="form-label">Client Website URL (Optional)</label>
+                      <input type="url" value={logoForm.websiteUrl} onChange={e => setLogoForm({ ...logoForm, websiteUrl: e.target.value })} className="form-control" placeholder="https://sla.in" />
+                    </div>
                   </div>
                 </div>
               )}
