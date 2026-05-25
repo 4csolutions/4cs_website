@@ -23,13 +23,19 @@ export const connectDB = async () => {
 
 const seedData = async () => {
   try {
-    // ALWAYS CLEAR COLLECTIONS on startup to ensure latest codebase-derived copy propagates
-    console.log('Clearing database collections to refresh seeder data...');
-    await User.deleteMany({});
-    await Sector.deleteMany({});
-    await Testimonial.deleteMany({});
-    await ClientLogo.deleteMany({});
-    await Blog.deleteMany({});
+    // Check if the database has any existing data
+    const userCount = await User.countDocuments();
+    const sectorCount = await Sector.countDocuments();
+    const testimonialCount = await Testimonial.countDocuments();
+    const logoCount = await ClientLogo.countDocuments();
+    const blogCount = await Blog.countDocuments();
+
+    if (userCount > 0 || sectorCount > 0 || testimonialCount > 0 || logoCount > 0 || blogCount > 0) {
+      console.log('Database is not clean (existing records found). Skipping database seeding to preserve existing data.');
+      return;
+    }
+
+    console.log('Clean database detected. Seeding initial data...');
 
     // 1. Seed Admin User
     console.log('Seeding default Admin user...');
