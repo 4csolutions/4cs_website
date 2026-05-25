@@ -29,7 +29,7 @@ router.post('/', async (req, res) => {
     const smtpPort = process.env.SMTP_PORT || 587;
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
-    const recipientEmail = process.env.CONTACT_EMAIL || 'syedmujeerhashmi@gmail.com'; // Fallback recipient
+    const recipientEmail = process.env.CONTACT_EMAIL || 'mujeerhashmi@4csolutions.in'; // Fallback recipient
 
     if (smtpHost && smtpUser && smtpPass) {
       try {

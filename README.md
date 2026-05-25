@@ -52,7 +52,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your_gmail@gmail.com
 SMTP_PASS=your_app_password
-CONTACT_EMAIL=syedmujeerhashmi@gmail.com
+CONTACT_EMAIL=mujeerhashmi@4csolutions.in
 ```
 
 ---
