@@ -87,6 +87,8 @@ function ScrollToTop() {
             {/* Desktop Navigation Links */}
             <nav className="desktop-nav flex align-center gap-6" style={{ display: 'flex' }}>
               <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Home</NavLink>
+              <NavLink to="/about-us" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>About Us</NavLink>
+              <NavLink to="/whyerpnext" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Why ERPNext</NavLink>
               
               {/* Dynamic Industries Dropdown */}
               <div className="dropdown" style={{ display: 'inline-block' }}>
@@ -106,8 +108,6 @@ function ScrollToTop() {
                 </div>
               </div>
 
-              <NavLink to="/whyerpnext" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Why ERPNext</NavLink>
-              <NavLink to="/about-us" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>About & Services</NavLink>
               <NavLink to="/case-studies" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Case Studies</NavLink>
               <NavLink to="/contact" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Contact Us</NavLink>
               
@@ -149,6 +149,8 @@ function ScrollToTop() {
           <div className="mobile-drawer glass anim-fade-in" style={{ position: 'fixed', top: '72px', left: 0, right: 0, padding: '24px', zIndex: 10000, borderBottom: '1px solid var(--border)', maxHeight: 'calc(100vh - 72px)', overflowY: 'auto' }}>
             <nav className="flex flex-column gap-4" style={{ textAlign: 'center' }}>
               <Link to="/" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Home</Link>
+              <Link to="/about-us" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>About Us</Link>
+              <Link to="/whyerpnext" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Why ERPNext</Link>
               
               {/* Dynamic Mobile Industries Drawer */}
               <div className="flex flex-column gap-2" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
@@ -167,8 +169,6 @@ function ScrollToTop() {
                 </div>
               </div>
 
-              <Link to="/whyerpnext" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Why ERPNext</Link>
-              <Link to="/about-us" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>About & Services</Link>
               <Link to="/case-studies" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Case Studies</Link>
               <Link to="/contact" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Contact Us</Link>
               {adminToken && <Link to="/admin" onClick={() => setMobileMenuOpen(false)} style={{ ...mobileLinkStyle, color: 'var(--primary)' }}>Admin Dashboard</Link>}
