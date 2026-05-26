@@ -91,36 +91,17 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="anim-slide-right flex justify-center">
-            {/* Visual Vector Illustration mock */}
-            <div className="hero-illustration" style={{ position: 'relative', width: '100%', maxWidth: '480px', height: '380px', backgroundColor: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: '24px', boxShadow: 'var(--shadow-lg)', padding: '24px', overflow: 'hidden' }}>
-              <div className="flex align-center justify-between" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px', marginBottom: '20px' }}>
-                <span style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-muted)' }}>4C Cloud Enterprise Terminal</span>
-                <span className="pulse-dot"></span>
-              </div>
-              <div className="illustration-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div style={illuCardStyle}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Realtime Accounts</span>
-                  <div style={{ fontSize: '20px', fontWeight: 700, margin: '6px 0', color: 'var(--primary)' }}>+24.8%</div>
-                  <span style={{ fontSize: '10px', color: 'var(--primary)', backgroundColor: 'var(--primary-glow)', padding: '2px 6px', borderRadius: '12px' }}>Optimized</span>
-                </div>
-                <div style={illuCardStyle}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Procurement Cycle</span>
-                  <div style={{ fontSize: '20px', fontWeight: 700, margin: '6px 0', color: 'var(--primary)' }}>-4.2 days</div>
-                  <span style={{ fontSize: '10px', color: 'var(--primary)', backgroundColor: 'var(--primary-glow)', padding: '2px 6px', borderRadius: '12px' }}>Efficient</span>
-                </div>
-                <div style={{ ...illuCardStyle, gridColumn: 'span 2' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Active ERPNext Integration Services</span>
-                  <div className="flex gap-2 wrap mt-2" style={{ marginTop: '8px' }}>
-                    {['Accounting', 'Logistics', 'Manufacturing', 'CRM', 'HR & Payroll'].map((tag, idx) => (
-                      <span key={idx} style={{ fontSize: '10px', backgroundColor: 'var(--bg-app)', border: '1px solid var(--border)', padding: '4px 8px', borderRadius: '4px' }}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div className="anim-slide-right flex justify-center align-center">
+            <img 
+              src="/hero-illustration.png" 
+              alt="4C Solutions ERPNext Dashboard Illustration" 
+              style={{ 
+                width: '100%', 
+                maxWidth: '560px', 
+                height: 'auto', 
+                objectFit: 'contain'
+              }} 
+            />
           </div>
         </div>
       </section>
@@ -344,10 +325,3 @@ export default function Home() {
   );
 }
 
-const illuCardStyle = {
-  backgroundColor: 'var(--bg-app)',
-  border: '1px solid var(--border)',
-  borderRadius: '12px',
-  padding: '16px',
-  textAlign: 'left'
-};
