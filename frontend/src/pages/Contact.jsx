@@ -1,7 +1,32 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function Contact() {
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = 'Contact Us | Book an ERPNext Consultation | 4C Solutions';
+
+    let metaDescEl = document.querySelector('meta[name="description"]');
+    let originalDesc = '';
+    if (metaDescEl) {
+      originalDesc = metaDescEl.getAttribute('content') || '';
+      metaDescEl.setAttribute('content', 'Get in touch with 4C Solutions. Request a free demo, schedule a consultancy call, or contact our support team regarding ERPNext implementations.');
+    }
+
+    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
+    let originalKeywords = '';
+    if (metaKeywordsEl) {
+      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
+      metaKeywordsEl.setAttribute('content', 'contact 4c solutions, erpnext demo request, call erpnext consultant, support 4c solutions');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
+      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
+    };
+  }, []);
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',

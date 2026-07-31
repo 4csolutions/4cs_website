@@ -82,6 +82,41 @@ export default function BlogPost() {
         ogDescEl.setAttribute('content', descStr);
       }
 
+      // 5. Manage Dynamic JSON-LD structured schema
+      let schemaEl = document.querySelector('#dynamic-blog-schema');
+      if (!schemaEl) {
+        schemaEl = document.createElement('script');
+        schemaEl.setAttribute('id', 'dynamic-blog-schema');
+        schemaEl.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(schemaEl);
+      }
+      
+      const blogSchema = {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": blog.title,
+        "description": blog.summary,
+        "author": {
+          "@type": "Person",
+          "name": blog.author || "4C Solutions Specialist"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "4C Solutions",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://4csolutions.in/logo.png"
+          }
+        },
+        "datePublished": blog.datePublished || new Date().toISOString(),
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `https://4csolutions.in/case-studies/${blog.slug}`
+        }
+      };
+      
+      schemaEl.innerHTML = JSON.stringify(blogSchema);
+
       // Cleanup function to restore original tags when unmounting
       return () => {
         document.title = originalTitle;
@@ -104,6 +139,9 @@ export default function BlogPost() {
         }
         if (ogDescEl && originalOgDesc) {
           ogDescEl.setAttribute('content', originalOgDesc);
+        }
+        if (schemaEl) {
+          schemaEl.remove();
         }
       };
     }

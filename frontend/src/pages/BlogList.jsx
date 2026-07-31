@@ -9,6 +9,31 @@ export default function BlogList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const originalTitle = document.title;
+    document.title = 'ERPNext Case Studies & Success Stories | 4C Solutions';
+
+    let metaDescEl = document.querySelector('meta[name="description"]');
+    let originalDesc = '';
+    if (metaDescEl) {
+      originalDesc = metaDescEl.getAttribute('content') || '';
+      metaDescEl.setAttribute('content', 'Explore our collection of ERPNext case studies. Learn how we optimize logistics fleet management, medical invoicing, law firm document systems, and contracting budgeting.');
+    }
+
+    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
+    let originalKeywords = '';
+    if (metaKeywordsEl) {
+      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
+      metaKeywordsEl.setAttribute('content', 'erpnext case studies, erpnext success stories, healthcare erp results, logistics fleet optimization case study');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
+      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
+    };
+  }, []);
+
+  useEffect(() => {
     // 1. Fetch Blogs
     fetch('/api/blogs')
       .then(res => res.json())

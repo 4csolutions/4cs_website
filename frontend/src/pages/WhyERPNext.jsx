@@ -1,8 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldAlert, Cpu, HeartHandshake, BadgePercent, ArrowRight, Library, HardDrive, DollarSign, RefreshCw } from 'lucide-react';
 
 export default function WhyERPNext() {
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = 'Why ERPNext? | B2B Operations Automation | 4C Solutions';
+
+    let metaDescEl = document.querySelector('meta[name="description"]');
+    let originalDesc = '';
+    if (metaDescEl) {
+      originalDesc = metaDescEl.getAttribute('content') || '';
+      metaDescEl.setAttribute('content', 'Discover why ERPNext is the premier open-source ERP framework for your operations. Benefit from zero user license overhead, secure cloud hosting, and total functional customization.');
+    }
+
+    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
+    let originalKeywords = '';
+    if (metaKeywordsEl) {
+      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
+      metaKeywordsEl.setAttribute('content', 'why erpnext, open source erp, zero license erp, custom erp integrations, frappe framework cloud hosting');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
+      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
+    };
+  }, []);
+
   const modules = [
     { title: 'Financial Accounting', icon: <DollarSign size={24} />, desc: 'Real-time bookkeeping, automated general ledger, tax accounts reconciliation, asset depreciation tracking, and multi-currency billing.' },
     { title: 'Procurement & Sales', icon: <HeartHandshake size={24} />, desc: 'Automate sales orders, request for quotations (RFQs), supplier agreements, dynamic pricing rules, and seamless customer invoicing.' },

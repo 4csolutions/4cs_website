@@ -19,6 +19,32 @@ export default function Home() {
     { title: 'Go-Live & Support', desc: 'We execute absolute data migration audits, launch production instances, and provide ongoing SLAs.', icon: '🚀' }
   ];
 
+  // Set SEO metadata
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = '4C Solutions | Premium ERPNext Solution Provider';
+
+    let metaDescEl = document.querySelector('meta[name="description"]');
+    let originalDesc = '';
+    if (metaDescEl) {
+      originalDesc = metaDescEl.getAttribute('content') || '';
+      metaDescEl.setAttribute('content', '4C Solutions is a premier B2B ERPNext solution provider specializing in custom ERP implementations for Healthcare, Legal, Logistics, and Project Contracting.');
+    }
+
+    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
+    let originalKeywords = '';
+    if (metaKeywordsEl) {
+      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
+      metaKeywordsEl.setAttribute('content', '4C Solutions, ERPNext, ERPNext Solution Provider, Healthcare ERP, Hospital Management System, Radiology Information System, RIS Software, Laboratory Management Software, LIS Software, HMS ERPNext, Legal Case Management, Law Firm Management, Law Management, Advocate Case Software, Legal Practice ERP, Logistics Dispatch, Project Budgeting ERP');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
+      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
+    };
+  }, []);
+
   useEffect(() => {
     // 1. Fetch Sectors
     fetch('/api/sectors')

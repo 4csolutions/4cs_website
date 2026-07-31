@@ -16,8 +16,13 @@ import logosRouter from './routes/logos.js';
 import blogsRouter from './routes/blogs.js';
 import contactRouter from './routes/contact.js';
 
+// Database Models for Sitemap
+import Sector from './models/Sector.js';
+import Blog from './models/Blog.js';
+
 // Init environment variables
 dotenv.config();
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -47,6 +52,83 @@ app.use('/api/contact', contactRouter);
 app.get('/api/ping', (req, res) => {
   res.json({ message: '4C Solutions API service is fully functional!', time: new Date() });
 });
+
+// Dynamic XML Sitemap for SEO & AEO
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const sectors = await Sector.find({}, 'slug updatedAt');
+    const blogs = await Blog.find({}, 'slug datePublished');
+
+    let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Static Pages -->
+  <url>
+    <loc>https://4csolutions.in/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/about-us</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/whyerpnext</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/case-studies</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/contact</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/privacy-policy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/terms-of-service</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>`;
+
+    // Dynamic Industry Sectors
+    sectors.forEach(sec => {
+      xml += `
+  <url>
+    <loc>https://4csolutions.in/industries/${sec.slug}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>`;
+    });
+
+    // Dynamic Case Study Blog Posts
+    blogs.forEach(blog => {
+      xml += `
+  <url>
+    <loc>https://4csolutions.in/case-studies/${blog.slug}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+
+    xml += `
+</urlset>`;
+
+    res.header('Content-Type', 'application/xml');
+    res.status(200).send(xml);
+  } catch (error) {
+    console.error('Error generating dynamic sitemap:', error);
+    res.status(500).send('Error generating sitemap');
+  }
+});
+
 
 // 4. Production Static File Rendering
 // Serves React frontend built assets in production

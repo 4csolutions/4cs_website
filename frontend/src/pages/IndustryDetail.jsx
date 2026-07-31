@@ -68,6 +68,43 @@ export default function IndustryDetail() {
         document.head.appendChild(metaDescEl);
       }
 
+      // 4. Dynamic JSON-LD Service Schema
+      let schemaEl = document.querySelector('#dynamic-sector-schema');
+      if (!schemaEl) {
+        schemaEl = document.createElement('script');
+        schemaEl.setAttribute('id', 'dynamic-sector-schema');
+        schemaEl.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(schemaEl);
+      }
+
+      const sectorSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": `${sectorName} ERPNext Solutions`,
+        "description": sectorDesc,
+        "provider": {
+          "@type": "ProfessionalService",
+          "name": "4C Solutions",
+          "url": "https://4csolutions.in"
+        },
+        "areaServed": "IN",
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": `${sectorName} Features`,
+          "itemListElement": Array.isArray(data.sector.features) 
+            ? data.sector.features.map(f => ({
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": f
+                }
+              }))
+            : []
+        }
+      };
+
+      schemaEl.innerHTML = JSON.stringify(sectorSchema);
+
       return () => {
         document.title = originalTitle;
         if (metaKeywordsEl) {
@@ -83,6 +120,9 @@ export default function IndustryDetail() {
           } else {
             metaDescEl.remove();
           }
+        }
+        if (schemaEl) {
+          schemaEl.remove();
         }
       };
     }

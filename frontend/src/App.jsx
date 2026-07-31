@@ -12,6 +12,9 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
 import IndustryDetail from './pages/IndustryDetail';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
+
 
 export default function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
@@ -193,6 +196,8 @@ function ScrollToTop() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/login" element={<Login setToken={setAdminToken} />} />
             <Route path="/admin" element={<AdminDashboard token={adminToken} />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
           </Routes>
         </main>
 
@@ -274,8 +279,8 @@ function ScrollToTop() {
             <div className="flex justify-between align-center wrap gap-4" style={{ borderTop: '1px solid var(--border)', paddingTop: '24px', fontSize: '13px', color: 'var(--text-muted)' }}>
               <span>© {new Date().getFullYear()} 4C Solutions. All rights reserved.</span>
               <div className="flex gap-4">
-                <a href="#" className="footer-hover-link">Privacy Policy</a>
-                <a href="#" className="footer-hover-link">Terms of Service</a>
+                <Link to="/privacy-policy" className="footer-hover-link">Privacy Policy</Link>
+                <Link to="/terms-of-service" className="footer-hover-link">Terms of Service</Link>
               </div>
             </div>
           </div>

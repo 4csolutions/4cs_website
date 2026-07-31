@@ -1,7 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Target, Compass, CheckCircle, BarChart3, Settings2, Users, Cpu, Link2, Database } from 'lucide-react';
 
 export default function AboutServices() {
+  useEffect(() => {
+    const originalTitle = document.title;
+    document.title = 'About Us & Services | Custom ERPNext Solutions | 4C Solutions';
+
+    let metaDescEl = document.querySelector('meta[name="description"]');
+    let originalDesc = '';
+    if (metaDescEl) {
+      originalDesc = metaDescEl.getAttribute('content') || '';
+      metaDescEl.setAttribute('content', 'Learn more about 4C Solutions. We provide custom Frappe app development, ERPNext core implementation, database migrations, third-party integrations, and SLA-driven maintenance.');
+    }
+
+    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
+    let originalKeywords = '';
+    if (metaKeywordsEl) {
+      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
+      metaKeywordsEl.setAttribute('content', 'about 4c solutions, custom frappe development, erpnext migrations, biometric integrations, erpnext training SLA');
+    }
+
+    return () => {
+      document.title = originalTitle;
+      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
+      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
+    };
+  }, []);
+
   const services = [
     {
       title: 'Frappe Custom App Development',
