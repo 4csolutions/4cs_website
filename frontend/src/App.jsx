@@ -93,10 +93,10 @@ function ScrollToTop() {
               <NavLink to="/about-us" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>About Us</NavLink>
               <NavLink to="/whyerpnext" className={({ isActive }) => `nav-link ${isActive ? 'active-link' : ''}`} style={navLinkStyle}>Why ERPNext</NavLink>
               
-              {/* Dynamic Industries Dropdown */}
+              {/* Dynamic Solutions Dropdown */}
               <div className="dropdown" style={{ display: 'inline-block' }}>
                 <span className="nav-link flex align-center" style={{ ...navLinkStyle, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  Industries <span style={{ fontSize: '9px' }}>▼</span>
+                  Solutions <span style={{ fontSize: '9px' }}>▼</span>
                 </span>
                 <div className="dropdown-content">
                   {sectors.map(sec => (
@@ -155,9 +155,9 @@ function ScrollToTop() {
               <Link to="/about-us" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>About Us</Link>
               <Link to="/whyerpnext" onClick={() => setMobileMenuOpen(false)} style={mobileLinkStyle}>Why ERPNext</Link>
               
-              {/* Dynamic Mobile Industries Drawer */}
+              {/* Dynamic Mobile Solutions Drawer */}
               <div className="flex flex-column gap-2" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-                <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Industries We Serve</span>
+                <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Solutions We Offer</span>
                 <div className="flex flex-column gap-2" style={{ paddingLeft: '8px' }}>
                   {sectors.map(sec => (
                     <Link 

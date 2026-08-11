@@ -247,9 +247,9 @@ export default function Home() {
       <section className="section sectors-section" style={{ backgroundColor: 'var(--bg-app)' }}>
         <div className="container">
           <div className="text-center" style={{ marginBottom: '64px' }}>
-            <h2 style={{ fontSize: '36px', marginBottom: '16px' }}>Industries We Serve</h2>
+            <h2 style={{ fontSize: '36px', marginBottom: '16px' }}>Solutions We Offer</h2>
             <p style={{ color: 'var(--text-muted)', maxWidth: '580px', margin: '0 auto' }}>
-              At 4C Solutions, we deliver tailored ERPNext solutions optimized specifically for the unique workflows of your business sector.
+              At 4C Solutions, we deliver tailored ERP software & web development solutions optimized specifically for your unique operational workflows.
             </p>
           </div>
 

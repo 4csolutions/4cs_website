@@ -94,7 +94,7 @@ export default function BlogList() {
               borderRadius: '24px'
             }}
           >
-            All Industries
+            All Solutions
           </button>
           
           {sectors.map((sec) => (
