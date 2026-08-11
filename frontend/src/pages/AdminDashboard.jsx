@@ -24,7 +24,7 @@ export default function AdminDashboard({ token }) {
   const [editItem, setEditItem] = useState(null);
 
   // Form states
-  const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', features: '' });
+  const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', featuresHeading: 'Tailored ERPNext Modules', featuresSubheading: '', features: '' });
   const [testimonialForm, setTestimonialForm] = useState({ clientName: '', clientPosition: '', companyName: '', feedback: '', sectorId: '' });
   const [logoForm, setLogoForm] = useState({ clientName: '', logoData: '', logoMimeType: 'image/png', websiteUrl: '', sectorId: '', previewUrl: '' });
   const [blogForm, setBlogForm] = useState({ title: '', summary: '', content: '', author: 'S. M. Hashmi', sectorId: '', metaKeywords: '' });
@@ -169,6 +169,8 @@ export default function AdminDashboard({ token }) {
         name: item?.name ?? '',
         description: item?.description ?? '',
         icon: item?.icon ?? 'activity',
+        featuresHeading: item?.featuresHeading ?? 'Tailored ERPNext Modules',
+        featuresSubheading: item?.featuresSubheading ?? '',
         features: item ? item.features.join('\n') : ''
       });
     } else if (type === 'testimonial') {
@@ -589,7 +591,7 @@ export default function AdminDashboard({ token }) {
 
       {/* ── MODAL ─────────────────────────────────────────────────────────────── */}
       {showModal && (
-        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.65)', zIndex: 2000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+        <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.65)', zIndex: 20000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
           <div className="glass anim-fade-in" style={{ backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: '16px', maxWidth: '720px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left' }}>
             <button onClick={() => { setShowModal(false); setEditItem(null); setErrorMsg(''); }} style={{ position: 'absolute', top: '18px', right: '18px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
               <X size={22} />
@@ -615,6 +617,14 @@ export default function AdminDashboard({ token }) {
                   <div className="form-group">
                     <label className="form-label">Lucide Icon Name</label>
                     <input type="text" value={sectorForm.icon} onChange={e => setSectorForm({ ...sectorForm, icon: e.target.value })} required className="form-control" placeholder="activity, scale, truck, briefcase…" />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Features Section Heading</label>
+                    <input type="text" value={sectorForm.featuresHeading} onChange={e => setSectorForm({ ...sectorForm, featuresHeading: e.target.value })} className="form-control" placeholder="Tailored ERPNext Modules, Core Features & Capabilities..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Features Subheading / Description</label>
+                    <textarea value={sectorForm.featuresSubheading} onChange={e => setSectorForm({ ...sectorForm, featuresSubheading: e.target.value })} className="form-control" rows="2" placeholder="Leave empty for auto-generated description..." />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Features <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(one per line)</span></label>

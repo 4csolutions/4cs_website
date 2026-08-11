@@ -213,9 +213,9 @@ export default function IndustryDetail() {
       <section id="features-target" className="section features-list-section" style={{ borderBottom: '1px solid var(--border)' }}>
         <div className="container">
           <div className="text-center" style={{ marginBottom: '60px' }}>
-            <h2 style={{ fontSize: '36px', marginBottom: '16px' }}>Tailored ERPNext Modules</h2>
-            <p style={{ color: 'var(--text-muted)', maxWidth: '580px', margin: '0 auto' }}>
-              Built specifically to modernize operational procedures and automate compliance reporting in the {sector.name} space.
+            <h2 style={{ fontSize: '36px', marginBottom: '16px' }}>{sector.featuresHeading || 'Tailored ERPNext Modules'}</h2>
+            <p style={{ color: 'var(--text-muted)', maxWidth: '680px', margin: '0 auto', lineHeight: '1.6' }}>
+              {sector.featuresSubheading || `Built specifically to modernize operational procedures and automate compliance reporting in the ${sector.name} space.`}
             </p>
           </div>
 

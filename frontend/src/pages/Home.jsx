@@ -297,7 +297,7 @@ export default function Home() {
 
       {/* 5. SECTOR DETAILS POPUP MODAL */}
       {selectedSector && (
-        <div className="modal-overlay flex align-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 2000, padding: '24px' }}>
+        <div className="modal-overlay flex align-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.6)', zIndex: 20000, padding: '24px' }}>
           <div className="modal-content glass anim-fade-in" style={{ backgroundColor: 'var(--bg-card)', padding: '40px', borderRadius: 'var(--radius-lg)', maxWidth: '780px', width: '100%', position: 'relative', maxHeight: '90vh', overflowY: 'auto', textAlign: 'left' }}>
             <button onClick={() => setSelectedSector(null)} className="btn-icon" style={{ position: 'absolute', top: '20px', right: '20px' }}>
               <X size={20} />

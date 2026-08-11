@@ -359,11 +359,24 @@ img {
 .dropdown {
   position: relative;
   display: inline-block;
+  padding: 10px 0; /* Creates an uninterrupted hover bridge */
+}
+
+/* Invisible pseudo-element bridge to prevent accidental closure on mouse gap */
+.dropdown::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 12px;
 }
 
 .dropdown-content {
   display: none;
   position: absolute;
+  top: calc(100% - 4px);
+  left: 0;
   background-color: var(--bg-card);
   min-width: 240px;
   box-shadow: var(--shadow-md);
@@ -371,9 +384,12 @@ img {
   border-radius: var(--radius-sm);
   z-index: 10001;
   padding: 8px 0;
-  margin-top: 4px;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
 }
 
 .dropdown-content a {
@@ -395,4 +411,7 @@ img {
 
 .dropdown:hover .dropdown-content {
   display: block;
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }

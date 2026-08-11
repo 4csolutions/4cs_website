@@ -26,6 +26,14 @@ const SectorSchema = new mongoose.Schema({
     type: [String],
     default: []
   },
+  featuresHeading: {
+    type: String,
+    default: 'Tailored ERPNext Modules'
+  },
+  featuresSubheading: {
+    type: String,
+    default: ''
+  },
   image: {
     type: String,
     default: ''

@@ -54,7 +54,7 @@ router.get('/slug/:slug', async (req, res) => {
 // POST new sector (Admin Secure)
 router.post('/', authenticateAdmin, async (req, res) => {
   try {
-    const { name, description, icon, features } = req.body;
+    const { name, description, icon, features, featuresHeading, featuresSubheading } = req.body;
     if (!name || !description) {
       return res.status(400).json({ error: 'Name and description are required' });
     }
@@ -70,7 +70,9 @@ router.post('/', authenticateAdmin, async (req, res) => {
       name,
       description,
       icon: icon || 'activity',
-      features: Array.isArray(features) ? features : []
+      features: Array.isArray(features) ? features : [],
+      featuresHeading: featuresHeading || 'Tailored ERPNext Modules',
+      featuresSubheading: featuresSubheading || ''
     });
 
     res.status(201).json(newSector);
@@ -82,7 +84,7 @@ router.post('/', authenticateAdmin, async (req, res) => {
 // PUT update sector (Admin Secure)
 router.put('/:id', authenticateAdmin, async (req, res) => {
   try {
-    const { name, description, icon, features } = req.body;
+    const { name, description, icon, features, featuresHeading, featuresSubheading } = req.body;
     const sector = await Sector.findById(req.params.id);
     if (!sector) {
       return res.status(404).json({ error: 'Sector not found' });
@@ -101,6 +103,8 @@ router.put('/:id', authenticateAdmin, async (req, res) => {
     if (description) sector.description = description;
     if (icon) sector.icon = icon;
     if (features) sector.features = Array.isArray(features) ? features : [];
+    if (featuresHeading !== undefined) sector.featuresHeading = featuresHeading;
+    if (featuresSubheading !== undefined) sector.featuresSubheading = featuresSubheading;
 
     const updatedSector = await sector.save();
     res.json(updatedSector);
