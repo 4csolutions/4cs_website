@@ -15,6 +15,9 @@ export default function AdminDashboard({ token }) {
   const [logos, setLogos] = useState([]);
   const [blogs, setBlogs] = useState([]);
 
+  // Multiselect state for inbox
+  const [selectedEnquiries, setSelectedEnquiries] = useState([]);
+
   // Modal control states
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
@@ -56,6 +59,7 @@ export default function AdminDashboard({ token }) {
         setTestimonials(Array.isArray(testimonialsData) ? testimonialsData : []);
         setLogos(Array.isArray(logosData) ? logosData : []);
         setBlogs(Array.isArray(blogsData) ? blogsData : []);
+        setSelectedEnquiries([]);
         setLoading(false);
       })
       .catch(() => {
@@ -69,6 +73,41 @@ export default function AdminDashboard({ token }) {
   const triggerSuccess = (msg) => {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(''), 4000);
+  };
+
+  // Multiselect helper functions
+  const toggleSelectAllEnquiries = () => {
+    if (selectedEnquiries.length === inbox.length) {
+      setSelectedEnquiries([]);
+    } else {
+      setSelectedEnquiries(inbox.map(m => m._id));
+    }
+  };
+
+  const toggleSelectEnquiry = (id) => {
+    setSelectedEnquiries(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDeleteEnquiries = () => {
+    if (selectedEnquiries.length === 0) return;
+    if (!window.confirm(`Are you sure you want to delete ${selectedEnquiries.length} selected enquiries?`)) return;
+
+    fetch('/api/contact/admin/inbox/bulk-delete', {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ ids: selectedEnquiries })
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) setErrorMsg(data.error);
+        else {
+          triggerSuccess(data.message || `${selectedEnquiries.length} enquiries deleted.`);
+          fetchAllData();
+        }
+      })
+      .catch(() => setErrorMsg('Failed to delete selected enquiries.'));
   };
 
   // Handle logo file pick → convert to base64
@@ -287,7 +326,24 @@ export default function AdminDashboard({ token }) {
             {/* ─── INBOX ─────────────────────────────────────────────────────── */}
             {activeTab === 'inbox' && (
               <div>
-                <h2 style={h2Style}>Web Form Enquiry Inbox</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                  <h2 style={{ ...h2Style, margin: 0 }}>Web Form Enquiry Inbox</h2>
+                  {selectedEnquiries.length > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', backgroundColor: 'rgba(231,29,54,0.08)', border: '1px solid rgba(231,29,54,0.2)', padding: '6px 14px', borderRadius: '8px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--error)' }}>
+                        {selectedEnquiries.length} selected
+                      </span>
+                      <button
+                        onClick={handleBulkDeleteEnquiries}
+                        className="btn btn-danger"
+                        style={{ padding: '6px 12px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}
+                      >
+                        <Trash2 size={14} /> Delete Selected
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 {inbox.length === 0 ? (
                   <p style={{ color: 'var(--text-muted)' }}>No messages yet.</p>
                 ) : (
@@ -295,39 +351,67 @@ export default function AdminDashboard({ token }) {
                     <table style={tableStyle}>
                       <thead>
                         <tr style={{ borderBottom: '2px solid var(--border)' }}>
+                          <th style={{ ...thStyle, width: '40px', textAlign: 'center' }}>
+                            <input
+                              type="checkbox"
+                              checked={inbox.length > 0 && selectedEnquiries.length === inbox.length}
+                              onChange={toggleSelectAllEnquiries}
+                              style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: 'var(--primary)' }}
+                              title="Select All"
+                            />
+                          </th>
                           {['Date', 'Client Details', 'Subject', 'Message', 'Status', 'Actions'].map(h => (
                             <th key={h} style={thStyle}>{h}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody>
-                        {inbox.map(msg => (
-                          <tr key={msg._id} style={{ borderBottom: '1px solid var(--border)', opacity: msg.status === 'Replied' ? 0.6 : 1 }}>
-                            <td style={tdStyle}>{new Date(msg.createdAt).toLocaleDateString()}</td>
-                            <td style={tdStyle}>
-                              <div style={{ fontWeight: 600 }}>{msg.name}</div>
-                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.email}</div>
-                              <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.phone || '—'}</div>
-                            </td>
-                            <td style={tdStyle}>{msg.subject}</td>
-                            <td style={{ ...tdStyle, maxWidth: '220px', wordBreak: 'break-word' }}>{msg.message}</td>
-                            <td style={tdStyle}>
-                              <button
-                                onClick={() => toggleEnquiryStatus(msg._id, msg.status)}
-                                style={{
-                                  padding: '4px 10px', fontSize: '11px', borderRadius: '12px', border: 'none', cursor: 'pointer',
-                                  backgroundColor: msg.status === 'New' ? 'var(--primary)' : msg.status === 'Read' ? 'var(--warning)' : 'var(--border)',
-                                  color: msg.status === 'New' ? 'white' : 'var(--text-main)'
-                                }}
-                              >{msg.status}</button>
-                            </td>
-                            <td style={tdStyle}>
-                              <button onClick={() => handleDelete('enquiry', msg._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
-                                <Trash2 size={14} />
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                        {inbox.map(msg => {
+                          const isSelected = selectedEnquiries.includes(msg._id);
+                          return (
+                            <tr
+                              key={msg._id}
+                              style={{
+                                borderBottom: '1px solid var(--border)',
+                                opacity: msg.status === 'Replied' ? 0.6 : 1,
+                                backgroundColor: isSelected ? 'var(--primary-glow)' : 'transparent',
+                                transition: 'background-color 0.15s ease'
+                              }}
+                            >
+                              <td style={{ ...tdStyle, textAlign: 'center' }}>
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={() => toggleSelectEnquiry(msg._id)}
+                                  style={{ width: '16px', height: '16px', cursor: 'pointer', accentColor: 'var(--primary)' }}
+                                />
+                              </td>
+                              <td style={tdStyle}>{new Date(msg.createdAt).toLocaleDateString()}</td>
+                              <td style={tdStyle}>
+                                <div style={{ fontWeight: 600 }}>{msg.name}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.email}</div>
+                                <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{msg.phone || '—'}</div>
+                              </td>
+                              <td style={tdStyle}>{msg.subject}</td>
+                              <td style={{ ...tdStyle, maxWidth: '220px', wordBreak: 'break-word' }}>{msg.message}</td>
+                              <td style={tdStyle}>
+                                <button
+                                  onClick={() => toggleEnquiryStatus(msg._id, msg.status)}
+                                  style={{
+                                    padding: '4px 10px', fontSize: '11px', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                                    backgroundColor: msg.status === 'New' ? 'var(--primary)' : msg.status === 'Read' ? 'var(--warning)' : 'var(--border)',
+                                    color: msg.status === 'New' ? 'white' : 'var(--text-main)'
+                                  }}
+                                >{msg.status}</button>
+                              </td>
+                              <td style={tdStyle}>
+                                <button onClick={() => handleDelete('enquiry', msg._id)} className="btn btn-danger" style={{ padding: '6px 10px' }} title="Delete">
+                                  <Trash2 size={14} />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
                       </tbody>
                     </table>
                   </div>

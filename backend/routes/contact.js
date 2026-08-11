@@ -134,4 +134,19 @@ router.delete('/admin/inbox/:id', authenticateAdmin, async (req, res) => {
   }
 });
 
+// POST bulk delete inquiries (Admin Secure)
+router.post('/admin/inbox/bulk-delete', authenticateAdmin, async (req, res) => {
+  try {
+    const { ids } = req.body;
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'Please provide an array of inquiry IDs to delete.' });
+    }
+
+    const result = await ContactMessage.deleteMany({ _id: { $in: ids } });
+    res.json({ message: `${result.deletedCount} enquiries deleted successfully.`, count: result.deletedCount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
