@@ -24,12 +24,13 @@ export default function AdminDashboard({ token }) {
   const [editItem, setEditItem] = useState(null);
 
   // Form states
-  const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', featuresHeading: 'Tailored ERPNext Modules', featuresSubheading: '', features: '' });
+  const [sectorForm, setSectorForm] = useState({ name: '', description: '', icon: 'activity', featuresHeading: 'Tailored ERPNext Modules', featuresSubheading: '', features: '', image: '', imagePreview: '' });
   const [testimonialForm, setTestimonialForm] = useState({ clientName: '', clientPosition: '', companyName: '', feedback: '', sectorId: '' });
   const [logoForm, setLogoForm] = useState({ clientName: '', logoData: '', logoMimeType: 'image/png', websiteUrl: '', sectorId: '', previewUrl: '' });
   const [blogForm, setBlogForm] = useState({ title: '', summary: '', content: '', author: 'S. M. Hashmi', sectorId: '', metaKeywords: '' });
 
   const fileInputRef = useRef(null);
+  const sectorFileInputRef = useRef(null);
 
   // Get token safely
   const localToken = token || localStorage.getItem('adminToken');
@@ -73,6 +74,18 @@ export default function AdminDashboard({ token }) {
   const triggerSuccess = (msg) => {
     setSuccessMsg(msg);
     setTimeout(() => setSuccessMsg(''), 4000);
+  };
+
+  // Handle sector cover image pick → convert to base64 data URL
+  const handleSectorImagePick = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const dataUrl = evt.target.result;
+      setSectorForm(prev => ({ ...prev, image: dataUrl, imagePreview: dataUrl }));
+    };
+    reader.readAsDataURL(file);
   };
 
   // Multiselect helper functions
@@ -171,7 +184,9 @@ export default function AdminDashboard({ token }) {
         icon: item?.icon ?? 'activity',
         featuresHeading: item?.featuresHeading ?? 'Tailored ERPNext Modules',
         featuresSubheading: item?.featuresSubheading ?? '',
-        features: item ? item.features.join('\n') : ''
+        features: item ? item.features.join('\n') : '',
+        image: item?.image ?? '',
+        imagePreview: item?.image ?? ''
       });
     } else if (type === 'testimonial') {
       setTestimonialForm({
@@ -435,12 +450,23 @@ export default function AdminDashboard({ token }) {
                     <table style={tableStyle}>
                       <thead>
                         <tr style={{ borderBottom: '2px solid var(--border)' }}>
-                          {['Solution Name', 'Description', 'Icon', 'Features Count', 'Actions'].map(h => <th key={h} style={thStyle}>{h}</th>)}
+                          {['Cover Image', 'Solution Name', 'Description', 'Icon', 'Features Count', 'Actions'].map(h => <th key={h} style={thStyle}>{h}</th>)}
                         </tr>
                       </thead>
                       <tbody>
                         {sectors.map(sec => (
                           <tr key={sec._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                            <td style={tdStyle}>
+                              {sec.image ? (
+                                <img
+                                  src={sec.image}
+                                  alt={sec.name}
+                                  style={{ height: '36px', maxWidth: '60px', objectFit: 'contain', borderRadius: '6px' }}
+                                />
+                              ) : (
+                                <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontStyle: 'italic' }}>No Image</span>
+                              )}
+                            </td>
                             <td style={{ ...tdStyle, fontWeight: 600 }}>{sec.name}</td>
                             <td style={{ ...tdStyle, maxWidth: '260px' }}>{sec.description.substring(0, 90)}…</td>
                             <td style={tdStyle}><code>{sec.icon}</code></td>
@@ -625,6 +651,57 @@ export default function AdminDashboard({ token }) {
                   <div className="form-group">
                     <label className="form-label">Features Subheading / Description</label>
                     <textarea value={sectorForm.featuresSubheading} onChange={e => setSectorForm({ ...sectorForm, featuresSubheading: e.target.value })} className="form-control" rows="2" placeholder="Leave empty for auto-generated description..." />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Cover Image / Illustration</label>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                      <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                        <input
+                          type="file"
+                          ref={sectorFileInputRef}
+                          onChange={handleSectorImagePick}
+                          accept="image/*"
+                          style={{ display: 'none' }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => sectorFileInputRef.current?.click()}
+                          className="btn btn-secondary"
+                          style={{ padding: '8px 16px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px' }}
+                        >
+                          <Upload size={16} /> Choose Image File
+                        </button>
+                        {sectorForm.image && (
+                          <button
+                            type="button"
+                            onClick={() => setSectorForm(prev => ({ ...prev, image: '', imagePreview: '' }))}
+                            className="btn btn-danger"
+                            style={{ padding: '6px 12px', fontSize: '12px' }}
+                          >
+                            Remove Image
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        type="text"
+                        value={sectorForm.image}
+                        onChange={e => setSectorForm({ ...sectorForm, image: e.target.value, imagePreview: e.target.value })}
+                        className="form-control"
+                        placeholder="Or enter image URL (e.g. /healthcare-illustration.png or https://...)"
+                        style={{ fontSize: '13px' }}
+                      />
+                      {sectorForm.imagePreview && (
+                        <div style={{ marginTop: '8px', border: '1px solid var(--border)', borderRadius: '12px', padding: '12px', textAlign: 'center', backgroundColor: 'var(--bg-app)', maxWidth: '240px' }}>
+                          <img
+                            src={sectorForm.imagePreview}
+                            alt="Cover Preview"
+                            style={{ maxHeight: '120px', maxWidth: '100%', objectFit: 'contain' }}
+                            onError={(e) => { e.target.style.display = 'none'; }}
+                          />
+                          <span style={{ display: 'block', fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>Cover Image Preview</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="form-group">
                     <label className="form-label">Features <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>(one per line)</span></label>
