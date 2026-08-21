@@ -1,32 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Target, Compass, CheckCircle, BarChart3, Settings2, Users, Cpu, Link2, Database } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function AboutServices() {
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = 'About Us & Services | Custom ERPNext Solutions | 4C Solutions';
-
-    let metaDescEl = document.querySelector('meta[name="description"]');
-    let originalDesc = '';
-    if (metaDescEl) {
-      originalDesc = metaDescEl.getAttribute('content') || '';
-      metaDescEl.setAttribute('content', 'Learn more about 4C Solutions. We provide custom Frappe app development, ERPNext core implementation, database migrations, third-party integrations, and SLA-driven maintenance.');
-    }
-
-    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
-    let originalKeywords = '';
-    if (metaKeywordsEl) {
-      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
-      metaKeywordsEl.setAttribute('content', 'about 4c solutions, custom frappe development, erpnext migrations, biometric integrations, erpnext training SLA');
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
-      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
-    };
-  }, []);
-
   const services = [
     {
       title: 'Frappe Custom App Development',
@@ -60,8 +36,27 @@ export default function AboutServices() {
     }
   ];
 
+  const aboutSchema = {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    "mainEntity": {
+      "@type": "ProfessionalService",
+      "name": "4C Solutions",
+      "description": "Premier ERPNext Integrator and custom Frappe development agency offering end-to-end ERP implementations, data migration, and API integration services.",
+      "url": "https://4csolutions.in/about-us",
+      "areaServed": "IN"
+    }
+  };
+
   return (
     <div className="aboutservices-container">
+      <SEO
+        title="About Us & Enterprise Services | Custom ERPNext Integrator"
+        description="Learn more about 4C Solutions. We provide custom Frappe app development, ERPNext core implementation, database migrations, third-party integrations, and SLA-driven maintenance."
+        keywords="about 4c solutions, custom frappe development, erpnext migrations, biometric integrations, erpnext training SLA, Frappe partners India"
+        canonicalUrl="https://4csolutions.in/about-us"
+        schema={aboutSchema}
+      />
       
       {/* 1. HERO HEADER */}
       <section className="section page-header" style={{ padding: '128px 0 64px 0', background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-app) 100%)', borderBottom: '1px solid var(--border)' }}>

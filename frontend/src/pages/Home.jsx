@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Activity, Scale, Truck, Briefcase, ChevronRight, MessageSquare, Quote, X, Award, CheckCircle2 } from 'lucide-react';
 
+import SEO from '../components/SEO';
+
 export default function Home() {
   const [sectors, setSectors] = useState([]);
   const [logos, setLogos] = useState([]);
@@ -18,32 +20,6 @@ export default function Home() {
     { title: 'Hands-on Training', desc: 'We empower users, department heads, and managers with thorough system walk-through runs.', icon: '🎓' },
     { title: 'Go-Live & Support', desc: 'We execute absolute data migration audits, launch production instances, and provide ongoing SLAs.', icon: '🚀' }
   ];
-
-  // Set SEO metadata
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = '4C Solutions | Premium ERPNext Solution Provider';
-
-    let metaDescEl = document.querySelector('meta[name="description"]');
-    let originalDesc = '';
-    if (metaDescEl) {
-      originalDesc = metaDescEl.getAttribute('content') || '';
-      metaDescEl.setAttribute('content', '4C Solutions is a premier B2B ERPNext solution provider specializing in custom ERP implementations for Healthcare, Legal, Logistics, and Project Contracting.');
-    }
-
-    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
-    let originalKeywords = '';
-    if (metaKeywordsEl) {
-      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
-      metaKeywordsEl.setAttribute('content', '4C Solutions, ERPNext, ERPNext Solution Provider, Healthcare ERP, Hospital Management System, Radiology Information System, RIS Software, Laboratory Management Software, LIS Software, HMS ERPNext, Legal Case Management, Law Firm Management, Law Management, Advocate Case Software, Legal Practice ERP, Logistics Dispatch, Project Budgeting ERP');
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
-      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
-    };
-  }, []);
 
   useEffect(() => {
     // 1. Fetch Sectors
@@ -93,6 +69,12 @@ export default function Home() {
 
   return (
     <div className="home-container">
+      <SEO
+        title="4C Solutions | Premium ERPNext Solution Provider"
+        description="4C Solutions is a premier B2B ERPNext solution provider specializing in custom ERP implementations for Healthcare, Legal, Logistics, and Project Contracting."
+        keywords="4C Solutions Kalaburagi, ERPNext, ERPNext Solution Provider, Healthcare ERPNext, HMS ERPNext, Legal Case Management, Law Firm Management, Logistics Dispatch, Project Budgeting ERP, Frappe Framework, Cloud ERP"
+        canonicalUrl="https://4csolutions.in/"
+      />
       
       {/* 1. HERO BANNER */}
       <section className="section hero-section flex align-center" style={{ minHeight: '85vh', background: 'linear-gradient(135deg, rgba(24, 210, 110, 0.05) 0%, rgba(18, 40, 58, 0.05) 100%)', padding: '128px 0 80px 0' }}>
@@ -284,7 +266,7 @@ export default function Home() {
                   </div>
 
                   <div style={{ padding: '0 24px 24px 24px' }}>
-                    <Link to={`/industries/${sector.slug}`} className="btn btn-secondary flex align-center justify-center gap-1" style={{ padding: '8px 18px', fontSize: '13px', width: '100%', textDecoration: 'none' }}>
+                    <Link to={`/solutions/${sector.slug}`} className="btn btn-secondary flex align-center justify-center gap-1" style={{ padding: '8px 18px', fontSize: '13px', width: '100%', textDecoration: 'none' }}>
                       Explore Features <ChevronRight size={16} />
                     </Link>
                   </div>

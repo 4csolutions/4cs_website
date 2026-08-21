@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Navigate } from 'react-router-dom';
 import { LayoutGrid, Quote, Image, Mail, Plus, Trash2, Edit3, CheckCircle2, AlertCircle, X, BookOpen, Upload, Eye } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function AdminDashboard({ token }) {
   const [activeTab, setActiveTab] = useState('inbox');
@@ -269,6 +270,11 @@ export default function AdminDashboard({ token }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', paddingTop: '72px' }}>
+      <SEO
+        title="Admin Dashboard"
+        description="4C Solutions Administrative Panel"
+        noIndex={true}
+      />
 
       {/* ── FIXED LEFT SIDEBAR ──────────────────────────────────────────────── */}
       <aside style={{

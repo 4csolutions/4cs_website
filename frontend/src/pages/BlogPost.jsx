@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, User, ArrowLeft, Clock, Tag } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function BlogPost() {
   const { slug } = useParams();
@@ -19,133 +20,6 @@ export default function BlogPost() {
         setLoading(false);
       });
   }, [slug]);
-
-  useEffect(() => {
-    if (blog) {
-      // 1. Update document title for SEO/AEO
-      const originalTitle = document.title;
-      document.title = `${blog.title} | 4C Solutions Case Study`;
-
-      // 2. Manage meta keywords
-      let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
-      let originalKeywords = '';
-      if (metaKeywordsEl) {
-        originalKeywords = metaKeywordsEl.getAttribute('content') || '';
-      }
-      
-      const keywordsStr = Array.isArray(blog.metaKeywords) && blog.metaKeywords.length > 0
-        ? blog.metaKeywords.join(', ')
-        : (typeof blog.metaKeywords === 'string' ? blog.metaKeywords : '');
-        
-      const finalKeywords = keywordsStr 
-        ? `${keywordsStr}, ERPNext, 4C Solutions, ERPNext Case Study`
-        : '4C Solutions, ERPNext, ERPNext Case Study, Cloud ERP Solutions';
-
-      if (metaKeywordsEl) {
-        metaKeywordsEl.setAttribute('content', finalKeywords);
-      } else {
-        metaKeywordsEl = document.createElement('meta');
-        metaKeywordsEl.setAttribute('name', 'keywords');
-        metaKeywordsEl.setAttribute('content', finalKeywords);
-        document.head.appendChild(metaKeywordsEl);
-      }
-
-      // 3. Manage meta description
-      let metaDescEl = document.querySelector('meta[name="description"]');
-      let originalDesc = '';
-      if (metaDescEl) {
-        originalDesc = metaDescEl.getAttribute('content') || '';
-      }
-      const descStr = blog.summary || 'Premium ERPNext Case Study by 4C Solutions';
-      
-      if (metaDescEl) {
-        metaDescEl.setAttribute('content', descStr);
-      } else {
-        metaDescEl = document.createElement('meta');
-        metaDescEl.setAttribute('name', 'description');
-        metaDescEl.setAttribute('content', descStr);
-        document.head.appendChild(metaDescEl);
-      }
-
-      // 4. Manage Open Graph (og:title, og:description)
-      const ogTitleEl = document.querySelector('meta[property="og:title"]');
-      let originalOgTitle = '';
-      if (ogTitleEl) {
-        originalOgTitle = ogTitleEl.getAttribute('content') || '';
-        ogTitleEl.setAttribute('content', `${blog.title} | 4C Solutions`);
-      }
-
-      const ogDescEl = document.querySelector('meta[property="og:description"]');
-      let originalOgDesc = '';
-      if (ogDescEl) {
-        originalOgDesc = ogDescEl.getAttribute('content') || '';
-        ogDescEl.setAttribute('content', descStr);
-      }
-
-      // 5. Manage Dynamic JSON-LD structured schema
-      let schemaEl = document.querySelector('#dynamic-blog-schema');
-      if (!schemaEl) {
-        schemaEl = document.createElement('script');
-        schemaEl.setAttribute('id', 'dynamic-blog-schema');
-        schemaEl.setAttribute('type', 'application/ld+json');
-        document.head.appendChild(schemaEl);
-      }
-      
-      const blogSchema = {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        "headline": blog.title,
-        "description": blog.summary,
-        "author": {
-          "@type": "Person",
-          "name": blog.author || "4C Solutions Specialist"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "4C Solutions",
-          "logo": {
-            "@type": "ImageObject",
-            "url": "https://4csolutions.in/logo.png"
-          }
-        },
-        "datePublished": blog.datePublished || new Date().toISOString(),
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": `https://4csolutions.in/case-studies/${blog.slug}`
-        }
-      };
-      
-      schemaEl.innerHTML = JSON.stringify(blogSchema);
-
-      // Cleanup function to restore original tags when unmounting
-      return () => {
-        document.title = originalTitle;
-        if (metaKeywordsEl) {
-          if (originalKeywords) {
-            metaKeywordsEl.setAttribute('content', originalKeywords);
-          } else {
-            metaKeywordsEl.remove();
-          }
-        }
-        if (metaDescEl) {
-          if (originalDesc) {
-            metaDescEl.setAttribute('content', originalDesc);
-          } else {
-            metaDescEl.remove();
-          }
-        }
-        if (ogTitleEl && originalOgTitle) {
-          ogTitleEl.setAttribute('content', originalOgTitle);
-        }
-        if (ogDescEl && originalOgDesc) {
-          ogDescEl.setAttribute('content', originalOgDesc);
-        }
-        if (schemaEl) {
-          schemaEl.remove();
-        }
-      };
-    }
-  }, [blog]);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -250,8 +124,40 @@ export default function BlogPost() {
     return html;
   };
 
+  const blogSchema = blog ? {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": blog.title,
+    "description": blog.summary,
+    "author": {
+      "@type": "Person",
+      "name": blog.author || "4C Solutions Specialist"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "4C Solutions",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://4csolutions.in/logo.png"
+      }
+    },
+    "datePublished": blog.datePublished || new Date().toISOString(),
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://4csolutions.in/case-studies/${blog.slug}`
+    }
+  } : null;
+
   return (
     <div className="blogpost-container" style={{ padding: '120px 0 80px 0' }}>
+      <SEO
+        title={blog ? `${blog.title} | Case Study` : 'ERPNext Case Study'}
+        description={blog?.summary || 'ERPNext Case Study & enterprise operational results by 4C Solutions.'}
+        keywords={blog?.metaKeywords || 'ERPNext case study, ERPNext success story, custom Frappe modules'}
+        canonicalUrl={`https://4csolutions.in/case-studies/${slug}`}
+        ogType="article"
+        schema={blogSchema}
+      />
       <div className="container" style={{ maxWidth: '800px' }}>
         
         {/* Back navigation */}

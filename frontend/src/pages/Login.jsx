@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Lock, User, KeyRound, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Login({ setToken }) {
   const [username, setUsername] = useState('');
@@ -44,6 +45,11 @@ export default function Login({ setToken }) {
 
   return (
     <div className="login-container flex align-center justify-center" style={{ minHeight: '80vh', padding: '120px 24px 80px 24px' }}>
+      <SEO
+        title="Employee Login Portal"
+        description="4C Solutions Employee & Admin Login Workspace."
+        noIndex={true}
+      />
       <div className="card-item" style={{ maxWidth: '420px', width: '100%', padding: '40px', borderRadius: 'var(--radius-lg)' }}>
         
         {/* Branding header */}

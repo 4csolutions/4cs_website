@@ -1,32 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function Contact() {
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = 'Contact Us | Book an ERPNext Consultation | 4C Solutions';
-
-    let metaDescEl = document.querySelector('meta[name="description"]');
-    let originalDesc = '';
-    if (metaDescEl) {
-      originalDesc = metaDescEl.getAttribute('content') || '';
-      metaDescEl.setAttribute('content', 'Get in touch with 4C Solutions. Request a free demo, schedule a consultancy call, or contact our support team regarding ERPNext implementations.');
-    }
-
-    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
-    let originalKeywords = '';
-    if (metaKeywordsEl) {
-      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
-      metaKeywordsEl.setAttribute('content', 'contact 4c solutions, erpnext demo request, call erpnext consultant, support 4c solutions');
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
-      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
-    };
-  }, []);
-
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,6 +13,28 @@ export default function Contact() {
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  const contactSchema = {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "Contact 4C Solutions",
+    "description": "Get in touch with 4C Solutions for ERPNext consultation, hospital software, logistics ERP, and custom Frappe development.",
+    "url": "https://4csolutions.in/contact",
+    "mainEntity": {
+      "@type": "ProfessionalService",
+      "name": "4C Solutions",
+      "telephone": "+91-8472-254105",
+      "email": "info@4csolutions.in",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "MIG-22, 1st Phase, Adarsh Nagar",
+        "addressLocality": "Kalaburagi",
+        "addressRegion": "Karnataka",
+        "postalCode": "585105",
+        "addressCountry": "IN"
+      }
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +58,7 @@ export default function Contact() {
         if (data.error) {
           setErrorMsg(data.error);
         } else {
-          setSuccessMsg(data.message);
+          setSuccessMsg('Your inquiry has been successfully transmitted! Our team will contact you shortly.');
           setFormData({
             name: '',
             email: '',
@@ -79,6 +77,13 @@ export default function Contact() {
 
   return (
     <div className="contact-container">
+      <SEO
+        title="Contact Us | Book an ERPNext Consultation & Demo"
+        description="Get in touch with 4C Solutions. Request a free demo, schedule an ERPNext consultancy call, or contact our team in Kalaburagi, Karnataka."
+        keywords="contact 4c solutions, erpnext demo request, erpnext consultant karnataka, erpnext support india"
+        canonicalUrl="https://4csolutions.in/contact"
+        schema={contactSchema}
+      />
       
       {/* 1. HERO HEADER */}
       <section className="section page-header" style={{ padding: '128px 0 64px 0', background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-app) 100%)', borderBottom: '1px solid var(--border)' }}>

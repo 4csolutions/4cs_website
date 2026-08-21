@@ -1,37 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, Clock, ArrowRight } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function BlogList() {
   const [blogs, setBlogs] = useState([]);
   const [sectors, setSectors] = useState([]);
   const [selectedSectorId, setSelectedSectorId] = useState('all');
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = 'ERPNext Case Studies & Success Stories | 4C Solutions';
-
-    let metaDescEl = document.querySelector('meta[name="description"]');
-    let originalDesc = '';
-    if (metaDescEl) {
-      originalDesc = metaDescEl.getAttribute('content') || '';
-      metaDescEl.setAttribute('content', 'Explore our collection of ERPNext case studies. Learn how we optimize logistics fleet management, medical invoicing, law firm document systems, and contracting budgeting.');
-    }
-
-    let metaKeywordsEl = document.querySelector('meta[name="keywords"]');
-    let originalKeywords = '';
-    if (metaKeywordsEl) {
-      originalKeywords = metaKeywordsEl.getAttribute('content') || '';
-      metaKeywordsEl.setAttribute('content', 'erpnext case studies, erpnext success stories, healthcare erp results, logistics fleet optimization case study');
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
-      if (metaKeywordsEl && originalKeywords) metaKeywordsEl.setAttribute('content', originalKeywords);
-    };
-  }, []);
 
   useEffect(() => {
     // 1. Fetch Blogs
@@ -62,8 +38,23 @@ export default function BlogList() {
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
+  const blogListSchema = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "ERPNext Case Studies & Success Stories",
+    "description": "Real-world implementations of ERPNext in Healthcare, Logistics, Legal Practice, and Contracting by 4C Solutions.",
+    "url": "https://4csolutions.in/case-studies"
+  };
+
   return (
     <div className="bloglist-container">
+      <SEO
+        title="ERPNext Case Studies & Enterprise Transformations"
+        description="Explore our collection of ERPNext case studies. Learn how we optimize logistics fleet management, medical invoicing, law firm document systems, and contracting budgeting."
+        keywords="erpnext case studies, erpnext success stories, healthcare erp results, logistics fleet optimization case study, legal erp case studies"
+        canonicalUrl="https://4csolutions.in/case-studies"
+        schema={blogListSchema}
+      />
       
       {/* 1. HERO HEADER */}
       <section className="section page-header" style={{ padding: '128px 0 64px 0', background: 'linear-gradient(180deg, var(--bg-card) 0%, var(--bg-app) 100%)', borderBottom: '1px solid var(--border)' }}>

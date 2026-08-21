@@ -53,56 +53,85 @@ app.get('/api/ping', (req, res) => {
   res.json({ message: '4C Solutions API service is fully functional!', time: new Date() });
 });
 
-// Dynamic XML Sitemap for SEO & AEO
+// Robots.txt dynamic endpoint for search engine crawlers
+app.get('/robots.txt', (req, res) => {
+  const robotsTxt = `User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://4csolutions.in/sitemap.xml
+`;
+  res.type('text/plain');
+  res.status(200).send(robotsTxt);
+});
+
+// Dynamic XML Sitemap for SEO & AEO Crawlers
 app.get('/sitemap.xml', async (req, res) => {
   try {
-    const sectors = await Sector.find({}, 'slug updatedAt');
-    const blogs = await Blog.find({}, 'slug datePublished');
+    const today = new Date().toISOString().split('T')[0];
+    const sectors = await Sector.find({}, 'slug updatedAt createdAt');
+    const blogs = await Blog.find({}, 'slug datePublished updatedAt createdAt');
 
     let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Static Pages -->
+  <!-- Core Static Routes -->
   <url>
     <loc>https://4csolutions.in/</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://4csolutions.in/about-us</loc>
+    <loc>https://4csolutions.in/solutions</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://4csolutions.in/whyerpnext</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://4csolutions.in/whyerpnext</loc>
+    <loc>https://4csolutions.in/about-us</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://4csolutions.in/case-studies</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://4csolutions.in/contact</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://4csolutions.in/privacy-policy</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://4csolutions.in/terms-of-service</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>`;
 
-    // Dynamic Industry Sectors
+    // Dynamic Solution Verticals
     sectors.forEach(sec => {
+      const lastModDate = sec.updatedAt ? new Date(sec.updatedAt).toISOString().split('T')[0] : today;
       xml += `
   <url>
-    <loc>https://4csolutions.in/industries/${sec.slug}</loc>
+    <loc>https://4csolutions.in/solutions/${sec.slug}</loc>
+    <lastmod>${lastModDate}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>`;
@@ -110,9 +139,13 @@ app.get('/sitemap.xml', async (req, res) => {
 
     // Dynamic Case Study Blog Posts
     blogs.forEach(blog => {
+      const lastModDate = blog.updatedAt 
+        ? new Date(blog.updatedAt).toISOString().split('T')[0] 
+        : (blog.datePublished ? new Date(blog.datePublished).toISOString().split('T')[0] : today);
       xml += `
   <url>
     <loc>https://4csolutions.in/case-studies/${blog.slug}</loc>
+    <lastmod>${lastModDate}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`;

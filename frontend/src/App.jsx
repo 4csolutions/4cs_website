@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, NavLink, useNavigate, useLocation, Navigate, useParams } from 'react-router-dom';
 import { Menu, X, Sun, Moon, LogOut, ShieldCheck, Mail, MapPin, Phone } from 'lucide-react';
 
 // Pages Import
 import Home from './pages/Home';
 import WhyERPNext from './pages/WhyERPNext';
 import AboutServices from './pages/AboutServices';
+import Solutions from './pages/Solutions';
+import SolutionDetail from './pages/SolutionDetail';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
-import IndustryDetail from './pages/IndustryDetail';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import NotFound from './pages/NotFound';
 
+function IndustrySlugRedirect() {
+  const { slug } = useParams();
+  return <Navigate to={`/solutions/${slug}`} replace />;
+}
 
 export default function App() {
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
@@ -35,7 +41,7 @@ export default function App() {
           setSectors(data);
         }
       })
-      .catch(err => console.error('Error loading industries list for dropdown:', err));
+      .catch(err => console.error('Error loading solutions list for dropdown:', err));
   }, []);
 
   const toggleTheme = () => {
@@ -95,14 +101,17 @@ function ScrollToTop() {
               
               {/* Dynamic Solutions Dropdown */}
               <div className="dropdown" style={{ display: 'inline-block' }}>
-                <span className="nav-link flex align-center" style={{ ...navLinkStyle, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <NavLink to="/solutions" className={({ isActive }) => `nav-link flex align-center ${isActive ? 'active-link' : ''}`} style={{ ...navLinkStyle, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   Solutions <span style={{ fontSize: '9px' }}>▼</span>
-                </span>
+                </NavLink>
                 <div className="dropdown-content">
+                  <NavLink to="/solutions" style={{ fontWeight: 700, borderBottom: '1px solid var(--border)', marginBottom: '4px' }}>
+                    All ERPNext Solutions →
+                  </NavLink>
                   {sectors.map(sec => (
                     <NavLink 
                       key={sec._id} 
-                      to={`/industries/${sec.slug}`} 
+                      to={`/solutions/${sec.slug}`} 
                       className={({ isActive }) => isActive ? 'active-link' : ''}
                     >
                       {sec.name}
@@ -157,12 +166,18 @@ function ScrollToTop() {
               
               {/* Dynamic Mobile Solutions Drawer */}
               <div className="flex flex-column gap-2" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
-                <span style={{ fontSize: '13px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--text-muted)', letterSpacing: '0.05em' }}>Solutions We Offer</span>
+                <Link 
+                  to="/solutions" 
+                  onClick={() => setMobileMenuOpen(false)}
+                  style={{ ...mobileLinkStyle, fontSize: '14px', fontWeight: '700', textTransform: 'uppercase', color: 'var(--primary)', letterSpacing: '0.05em' }}
+                >
+                  All Solutions Overview →
+                </Link>
                 <div className="flex flex-column gap-2" style={{ paddingLeft: '8px' }}>
                   {sectors.map(sec => (
                     <Link 
                       key={sec._id} 
-                      to={`/industries/${sec.slug}`} 
+                      to={`/solutions/${sec.slug}`} 
                       onClick={() => setMobileMenuOpen(false)} 
                       style={{ ...mobileLinkStyle, fontSize: '14px', padding: '4px 0' }}
                     >
@@ -188,7 +203,11 @@ function ScrollToTop() {
         <main className="main-content" style={{ flexGrow: 1 }}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/industries/:slug" element={<IndustryDetail />} />
+            <Route path="/solutions" element={<Solutions />} />
+            <Route path="/solutions/:slug" element={<SolutionDetail />} />
+            {/* Backward compatibility redirects for legacy /industries links */}
+            <Route path="/industries" element={<Navigate to="/solutions" replace />} />
+            <Route path="/industries/:slug" element={<IndustrySlugRedirect />} />
             <Route path="/whyerpnext" element={<WhyERPNext />} />
             <Route path="/about-us" element={<AboutServices />} />
             <Route path="/case-studies" element={<BlogList />} />
@@ -198,6 +217,7 @@ function ScrollToTop() {
             <Route path="/admin" element={<AdminDashboard token={adminToken} />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
 
@@ -242,6 +262,7 @@ function ScrollToTop() {
                 <h4 style={{ fontSize: '16px', color: 'var(--text-main)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Useful Links</h4>
                 <div className="flex flex-column gap-2" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
                   <Link to="/" className="footer-hover-link">Home Base</Link>
+                  <Link to="/solutions" className="footer-hover-link">ERPNext Solutions</Link>
                   <Link to="/whyerpnext" className="footer-hover-link">Why Choose ERPNext</Link>
                   <Link to="/about-us" className="footer-hover-link">About Our Company</Link>
                   <Link to="/case-studies" className="footer-hover-link">Success Stories</Link>

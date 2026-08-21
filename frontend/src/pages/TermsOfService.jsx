@@ -1,26 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Scale } from 'lucide-react';
+import SEO from '../components/SEO';
 
 export default function TermsOfService() {
-  useEffect(() => {
-    const originalTitle = document.title;
-    document.title = 'Terms of Service | 4C Solutions';
-
-    let metaDescEl = document.querySelector('meta[name="description"]');
-    let originalDesc = '';
-    if (metaDescEl) {
-      originalDesc = metaDescEl.getAttribute('content') || '';
-      metaDescEl.setAttribute('content', 'Terms of Service for 4C Solutions. Review our service level agreements, consulting terms, and licensing policies.');
-    }
-
-    return () => {
-      document.title = originalTitle;
-      if (metaDescEl && originalDesc) metaDescEl.setAttribute('content', originalDesc);
-    };
-  }, []);
-
   return (
     <div className="terms-container" style={{ padding: '120px 24px 80px 24px', maxWidth: '800px', margin: '0 auto' }}>
+      <SEO
+        title="Terms of Service"
+        description="Terms of Service for 4C Solutions. Review our service level agreements, consulting terms, and licensing policies."
+        canonicalUrl="https://4csolutions.in/terms-of-service"
+      />
       <div className="card-item" style={{ padding: '40px', borderRadius: 'var(--radius-lg)', textAlign: 'left' }}>
         <div className="flex align-center gap-3" style={{ borderBottom: '1px solid var(--border)', paddingBottom: '20px', marginBottom: '32px' }}>
           <Scale size={36} style={{ color: 'var(--primary)' }} />
