@@ -8,8 +8,10 @@ export default function Contact() {
     email: '',
     phone: '',
     subject: 'ERPNext Setup Demo',
-    message: ''
+    message: '',
+    website_url: '' // Anti-spam honeypot
   });
+  const [formLoadedAt] = useState(() => Date.now());
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -50,7 +52,10 @@ export default function Contact() {
     fetch('/api/contact', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: JSON.stringify({
+        ...formData,
+        _t: formLoadedAt
+      })
     })
       .then(res => res.json())
       .then(data => {
@@ -64,7 +69,8 @@ export default function Contact() {
             email: '',
             phone: '',
             subject: 'ERPNext Setup Demo',
-            message: ''
+            message: '',
+            website_url: ''
           });
         }
       })
@@ -167,6 +173,33 @@ export default function Contact() {
             )}
 
             <form onSubmit={handleSubmit}>
+              {/* Anti-Spam Bot Trap (Honeypot) - Hidden from humans */}
+              <div 
+                style={{ 
+                  position: 'absolute', 
+                  left: '-9999px', 
+                  top: '-9999px', 
+                  opacity: 0, 
+                  height: 0, 
+                  width: 0, 
+                  zIndex: -1, 
+                  pointerEvents: 'none' 
+                }} 
+                aria-hidden="true" 
+                tabIndex={-1}
+              >
+                <label htmlFor="website_url">Leave this field blank</label>
+                <input 
+                  type="text" 
+                  id="website_url" 
+                  name="website_url" 
+                  value={formData.website_url || ''} 
+                  onChange={handleChange} 
+                  tabIndex={-1} 
+                  autoComplete="off" 
+                />
+              </div>
+
               <div className="grid grid-2" style={{ gap: '16px' }}>
                 <div className="form-group" style={{ marginBottom: '16px' }}>
                   <label className="form-label">Full Name</label>

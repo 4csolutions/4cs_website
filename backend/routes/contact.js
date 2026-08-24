@@ -5,12 +5,123 @@ import { authenticateAdmin } from './auth.js';
 
 const router = express.Router();
 
-// POST new inquiry (Public Contact Form)
-router.post('/', async (req, res) => {
+// -------------------------------------------------------------
+// ANTI-SPAM DEFENSE LAYER
+// -------------------------------------------------------------
+
+// 1. In-Memory IP Rate Limiter (Max 5 submissions per 15 minutes per IP)
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const MAX_SUBMISSIONS_PER_WINDOW = 3;
+
+function contactRateLimiter(req, res, next) {
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const record = rateLimitMap.get(ip);
+
+  if (record) {
+    if (now - record.startTime > RATE_LIMIT_WINDOW_MS) {
+      rateLimitMap.set(ip, { count: 1, startTime: now });
+    } else if (record.count >= MAX_SUBMISSIONS_PER_WINDOW) {
+      console.warn(`[Anti-Spam] Rate limit exceeded for IP: ${ip}`);
+      return res.status(429).json({ 
+        error: 'Too many submissions received from your connection. Please wait a few minutes before trying again.' 
+      });
+    } else {
+      record.count++;
+    }
+  } else {
+    rateLimitMap.set(ip, { count: 1, startTime: now });
+  }
+
+  // Periodic cleanup if map grows
+  if (rateLimitMap.size > 1000) {
+    for (const [key, val] of rateLimitMap.entries()) {
+      if (now - val.startTime > RATE_LIMIT_WINDOW_MS) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+
+  next();
+}
+
+// 2. Bot Gibberish & Heuristic Detection Helper
+function isSpamSubmission({ name, email, message, website_url, _t }) {
+  // A. Honeypot check: Non-empty hidden field filled by bot scrapers
+  if (website_url && website_url.trim().length > 0) {
+    return { isSpam: true, reason: 'Honeypot field triggered' };
+  }
+
+  // B. Submission speed check: Bots submit instantaneously (<2.5 seconds)
+  if (_t) {
+    const elapsed = Date.now() - Number(_t);
+    if (elapsed > 0 && elapsed < 2500) {
+      return { isSpam: true, reason: `Sub-human submission speed (${elapsed}ms)` };
+    }
+  }
+
+  // C. Dotted email spam pattern (e.g. e.ka.ci.qop.ep.i.k.0.3@gmail.com)
+  const emailUser = (email || '').split('@')[0] || '';
+  if (emailUser.split('.').length > 4) {
+    return { isSpam: true, reason: 'Excessively dotted email pattern' };
+  }
+
+  // D. Gibberish / High-Entropy Random String Detection (e.g. nnBIVLFwIzoGLEkT or esWycPAJcXNTFcZet)
+  const isGibberish = (str) => {
+    if (!str || typeof str !== 'string') return false;
+    const trimmed = str.trim();
+    if (trimmed.length < 10) return false;
+
+    // Check single-word high length with frequent uppercase/lowercase alternating transitions
+    if (!trimmed.includes(' ')) {
+      let caseTransitions = 0;
+      for (let i = 0; i < trimmed.length - 1; i++) {
+        const isCurrentUpper = trimmed[i] >= 'A' && trimmed[i] <= 'Z';
+        const isNextUpper = trimmed[i + 1] >= 'A' && trimmed[i + 1] <= 'Z';
+        const isCurrentLower = trimmed[i] >= 'a' && trimmed[i] <= 'z';
+        const isNextLower = trimmed[i + 1] >= 'a' && trimmed[i + 1] <= 'z';
+        if ((isCurrentUpper && isNextLower) || (isCurrentLower && isNextUpper)) {
+          caseTransitions++;
+        }
+      }
+      if (caseTransitions >= 4 && trimmed.length >= 10) {
+        return true;
+      }
+      if (/[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{6,}/.test(trimmed)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  if (isGibberish(name)) {
+    return { isSpam: true, reason: `Gibberish name detected ("${name}")` };
+  }
+  if (isGibberish(message)) {
+    return { isSpam: true, reason: `Gibberish message detected ("${message}")` };
+  }
+
+  return { isSpam: false };
+}
+
+// POST new inquiry (Public Contact Form with Anti-Spam Protection)
+router.post('/', contactRateLimiter, async (req, res) => {
   try {
-    const { name, email, phone, subject, message } = req.body;
+    const { name, email, phone, subject, message, website_url, _t } = req.body;
     if (!name || !email || !message) {
       return res.status(400).json({ error: 'Name, email, and message are required' });
+    }
+
+    // Run Anti-Spam filters
+    const spamCheck = isSpamSubmission({ name, email, message, website_url, _t });
+    if (spamCheck.isSpam) {
+      console.warn(`[Anti-Spam Filter] Blocked contact bot: ${spamCheck.reason} from IP: ${req.ip}`);
+      // Silently return success to the bot to avoid retry attacks
+      return res.status(200).json({
+        message: 'Thank you! Your message has been sent successfully. We will get back to you shortly.',
+        data: { _id: 'filtered' }
+      });
     }
 
     // 1. Save Enquiry to MongoDB
